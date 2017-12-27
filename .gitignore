@@ -57,3 +57,6 @@ typings/
 # dotenv environment variables file
 .env
 
+data
+studio/main.js
+studio/main.js.map
