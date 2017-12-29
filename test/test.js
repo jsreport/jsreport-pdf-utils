@@ -40,7 +40,7 @@ describe('version control', () => {
     parsedPdf.pages[0].Texts.find((t) => t.R[0].T === 'header').should.be.ok()
   })
 
-  it.only('should be able to merge header with pageCount', async () => {
+  it('should be able to merge header with pageCount', async () => {
     await jsreport.documentStore.collection('templates').insert({
       content: '{{$pdf.pageNumber}}/{{$pdf.pages.length}}',
       shortid: 'header',
@@ -55,13 +55,48 @@ describe('version control', () => {
         recipe: 'chrome-pdf',
         pdfUtils: {
           headerTemplateShortid: 'header',
-          headerHeight: '10cm'
+          headerBox: '0 297mm 217mm 297mm'// [0, 792 - this.height, 612, 792]
         }
       }
     })
 
     const parsedPdf = await parsePdf(result.content)
-    parsedPdf.pages[0].Texts.find((t) => t.R[0].T === '1/2').should.be.ok()
-    parsedPdf.pages[2].Texts.find((t) => t.R[0].T === '2/2').should.be.ok()
+
+    parsedPdf.pages[0].texts.find((t) => t === '1/2').should.be.ok()
+    parsedPdf.pages[1].texts.find((t) => t === '2/2').should.be.ok()
+  })
+
+  it.only('should be able to merge header and footer at once', async () => {
+    await jsreport.documentStore.collection('templates').insert({
+      content: 'header',
+      shortid: 'header',
+      engine: 'handlebars',
+      recipe: 'chrome-pdf'
+    })
+
+    await jsreport.documentStore.collection('templates').insert({
+      content: 'footer',
+      shortid: 'footer',
+      engine: 'handlebars',
+      recipe: 'chrome-pdf'
+    })
+
+    const result = await jsreport.render({
+      template: {
+        content: `Foo`,
+        engine: 'none',
+        recipe: 'chrome-pdf',
+        pdfUtils: {
+          headerTemplateShortid: 'header',
+          headerBox: '0 297mm 217mm 297mm',
+          footerTemplateShortid: 'footer',
+          footerBox: '0 0mm 217mm 10mm'
+        }
+      }
+    })
+
+    const parsedPdf = await parsePdf(result.content)
+    parsedPdf.pages[0].texts.find((t) => t === 'header').should.be.ok()
+    parsedPdf.pages[0].texts.find((t) => t === 'footer').should.be.ok()
   })
 })
