@@ -3,7 +3,7 @@ const Promise = require('bluebird')
 const parsePdf = require('../lib/utils/parsePdf')
 require('should')
 
-describe('version control', () => {
+describe('pdf utils', () => {
   let jsreport
 
   beforeEach(async () => {
@@ -29,15 +29,14 @@ describe('version control', () => {
         engine: 'none',
         recipe: 'chrome-pdf',
         pdfUtils: {
-          headerTemplateShortid: 'header',
-          headerHeight: '10cm'
+          headerTemplateShortid: 'header'
         }
       }
     })
 
     const parsedPdf = await parsePdf(result.content)
-    parsedPdf.pages[0].Texts.find((t) => t.R[0].T === 'foo').should.be.ok()
-    parsedPdf.pages[0].Texts.find((t) => t.R[0].T === 'header').should.be.ok()
+    parsedPdf.pages[0].texts.find((t) => t === 'foo').should.be.ok()
+    parsedPdf.pages[0].texts.find((t) => t === 'header').should.be.ok()
   })
 
   it('should be able to merge header with pageCount', async () => {
@@ -100,7 +99,7 @@ describe('version control', () => {
     parsedPdf.pages[0].texts.find((t) => t === 'footer').should.be.ok()
   })
 
-  it.only('should be able append pages from another template', async () => {
+  it('should be able append pages from another template', async () => {
     await jsreport.documentStore.collection('templates').insert({
       content: 'another page',
       shortid: 'anotherPage',
