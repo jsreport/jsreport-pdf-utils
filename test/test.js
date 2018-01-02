@@ -66,7 +66,7 @@ describe('version control', () => {
     parsedPdf.pages[1].texts.find((t) => t === '2/2').should.be.ok()
   })
 
-  it.only('should be able to merge header and footer at once', async () => {
+  it('should be able to merge header and footer at once', async () => {
     await jsreport.documentStore.collection('templates').insert({
       content: 'header',
       shortid: 'header',
@@ -99,4 +99,44 @@ describe('version control', () => {
     parsedPdf.pages[0].texts.find((t) => t === 'header').should.be.ok()
     parsedPdf.pages[0].texts.find((t) => t === 'footer').should.be.ok()
   })
+
+  it.only('should be able append pages from another template', async () => {
+    await jsreport.documentStore.collection('templates').insert({
+      content: 'another page',
+      shortid: 'anotherPage',
+      engine: 'handlebars',
+      recipe: 'chrome-pdf',
+      chrome: {
+        landscape: true
+      }
+    })
+
+    const result = await jsreport.render({
+      template: {
+        content: `foo`,
+        engine: 'none',
+        recipe: 'chrome-pdf',
+        pdfUtils: {
+          appendTemplateShortid: 'anotherPage'
+        }
+      }
+    })
+
+    const parsedPdf = await parsePdf(result.content)
+    require('fs').writeFileSync('out.pdf', result.content)
+    parsedPdf.pages[0].texts.find((t) => t === 'foo').should.be.ok()
+    parsedPdf.pages[1].texts.find((t) => t === 'another page').should.be.ok()
+  })
 })
+
+/*
+function getPageId(data) {
+    let currentPageIndex = data.$pdf.pageNumber
+    while(currentPageIndex-- > 0) {
+        const pageid = data.$pdf.pages[currentPageIndex].texts.find((t) => t.startsWith('pageid'))
+        if (pageid) {
+            return pageid.split('-')[1]
+        }
+    }
+}
+*/
