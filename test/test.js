@@ -17,7 +17,7 @@ describe('pdf utils', () => {
 
   it('should be able to merge in a header', async () => {
     await jsreport.documentStore.collection('templates').insert({
-      content: 'header',
+      content: '<div style"height: 2cm">header</div>',
       shortid: 'header',
       engine: 'none',
       recipe: 'chrome-pdf'
@@ -30,6 +30,9 @@ describe('pdf utils', () => {
         recipe: 'chrome-pdf',
         pdfUtils: {
           headerTemplateShortid: 'header'
+        },
+        chrome: {
+          marginTop: '3cm'
         }
       }
     })
