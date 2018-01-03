@@ -36,11 +36,11 @@
   },
   "blobStorage": "fileSystem",
   "phantom": {
-    "strategy": "dedicated-process",
+    "strategy": "phantom-server",
     "timeout": 60000
   },
   "tasks": {
-    "strategy": "dedicated-process",
+    "strategy": "http-server",
     "timeout": 10000,
     "allowedModules": "*"
   },

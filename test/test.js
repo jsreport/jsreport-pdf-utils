@@ -15,7 +15,7 @@ describe('pdf utils', () => {
     return jsreport.init()
   })
 
-  it('should be able to merge in a header', async () => {
+  it('renderForEveryPageAndMerge should merge in static text', async () => {
     await jsreport.documentStore.collection('templates').insert({
       content: '<div style"height: 2cm">header</div>',
       shortid: 'header',
@@ -28,9 +28,7 @@ describe('pdf utils', () => {
         content: 'foo',
         engine: 'none',
         recipe: 'chrome-pdf',
-        pdfUtils: {
-          headerTemplateShortid: 'header'
-        },
+        pdfOperations: [{ type: 'renderForEveryPageAndMerge', templateShortid: 'header' }],
         chrome: {
           marginTop: '3cm'
         }
@@ -42,7 +40,7 @@ describe('pdf utils', () => {
     parsedPdf.pages[0].texts.find((t) => t === 'header').should.be.ok()
   })
 
-  it('should be able to merge header with pageCount', async () => {
+  it('renderForEveryPageAndMerge should reach dynamic pageNumber for evrey page', async () => {
     await jsreport.documentStore.collection('templates').insert({
       content: '{{$pdf.pageNumber}}/{{$pdf.pages.length}}',
       shortid: 'header',
@@ -55,10 +53,7 @@ describe('pdf utils', () => {
         content: `<h1 style='page-break-before: always'>Hello</h1><h1 style='page-break-before: always'>Hello</h1>`,
         engine: 'none',
         recipe: 'chrome-pdf',
-        pdfUtils: {
-          headerTemplateShortid: 'header',
-          headerBox: '0 297mm 217mm 297mm'// [0, 792 - this.height, 612, 792]
-        }
+        pdfOperations: [{ type: 'renderForEveryPageAndMerge', templateShortid: 'header' }]
       }
     })
 
@@ -68,7 +63,7 @@ describe('pdf utils', () => {
     parsedPdf.pages[1].texts.find((t) => t === '2/2').should.be.ok()
   })
 
-  it('should be able to merge header and footer at once', async () => {
+  it('renderForEveryPageAndMerge should work for multiple operations', async () => {
     await jsreport.documentStore.collection('templates').insert({
       content: 'header',
       shortid: 'header',
@@ -88,12 +83,7 @@ describe('pdf utils', () => {
         content: `Foo`,
         engine: 'none',
         recipe: 'chrome-pdf',
-        pdfUtils: {
-          headerTemplateShortid: 'header',
-          headerBox: '0 297mm 217mm 297mm',
-          footerTemplateShortid: 'footer',
-          footerBox: '0 0mm 217mm 10mm'
-        }
+        pdfOperations: [{ type: 'renderForEveryPageAndMerge', templateShortid: 'header' }, { type: 'renderForEveryPageAndMerge', templateShortid: 'footer' }]
       }
     })
 
@@ -102,7 +92,29 @@ describe('pdf utils', () => {
     parsedPdf.pages[0].texts.find((t) => t === 'footer').should.be.ok()
   })
 
-  it('should be able append pages from another template', async () => {
+  it('renderOnceAndMergeToEveryPage should add static content', async () => {
+    await jsreport.documentStore.collection('templates').insert({
+      content: 'header',
+      shortid: 'header',
+      engine: 'handlebars',
+      recipe: 'chrome-pdf'
+    })
+
+    const result = await jsreport.render({
+      template: {
+        content: `Foo`,
+        engine: 'none',
+        recipe: 'chrome-pdf',
+        pdfOperations: [{ type: 'renderOnceAndMergeToEveryPage', templateShortid: 'header' }]
+      }
+    })
+
+    const parsedPdf = await parsePdf(result.content)
+    parsedPdf.pages[0].texts.find((t) => t === 'header').should.be.ok()
+    parsedPdf.pages[0].texts.find((t) => t === 'Foo').should.be.ok()
+  })
+
+  it('renderAndAppend operation be able to append pages from another template', async () => {
     await jsreport.documentStore.collection('templates').insert({
       content: 'another page',
       shortid: 'anotherPage',
@@ -118,16 +130,38 @@ describe('pdf utils', () => {
         content: `foo`,
         engine: 'none',
         recipe: 'chrome-pdf',
-        pdfUtils: {
-          appendTemplateShortid: 'anotherPage'
-        }
+        pdfOperations: [{ type: 'renderAndAppend', templateShortid: 'anotherPage' }]
       }
     })
 
     const parsedPdf = await parsePdf(result.content)
-    require('fs').writeFileSync('out.pdf', result.content)
     parsedPdf.pages[0].texts.find((t) => t === 'foo').should.be.ok()
     parsedPdf.pages[1].texts.find((t) => t === 'another page').should.be.ok()
+  })
+
+  it('renderAndPerpend operation be able to prepend pages from another template', async () => {
+    await jsreport.documentStore.collection('templates').insert({
+      content: 'another page',
+      shortid: 'anotherPage',
+      engine: 'handlebars',
+      recipe: 'chrome-pdf',
+      chrome: {
+        landscape: true
+      }
+    })
+
+    const result = await jsreport.render({
+      template: {
+        content: `foo`,
+        engine: 'none',
+        recipe: 'chrome-pdf',
+        pdfOperations: [{ type: 'renderAndPrepend', templateShortid: 'anotherPage' }]
+      }
+    })
+
+    const parsedPdf = await parsePdf(result.content)
+    parsedPdf.pages[0].texts.find((t) => t === 'another page').should.be.ok()
+    parsedPdf.pages[1].texts.find((t) => t === 'foo').should.be.ok()
   })
 })
 
