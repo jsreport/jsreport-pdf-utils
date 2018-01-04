@@ -14,7 +14,7 @@ describe('pdf utils', () => {
     return jsreport.init()
   })
 
-  it.only('merge should embed static text', async () => {
+  it('merge should embed static text', async () => {
     await jsreport.documentStore.collection('templates').insert({
       content: '<div style"height: 2cm">header</div>',
       shortid: 'header',
