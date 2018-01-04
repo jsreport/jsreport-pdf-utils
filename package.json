@@ -4,7 +4,7 @@
   "description": "jsreport extension providing pdf operations like merge or concatenation",
   "main": "index.js",
   "scripts": {
-    "test": "set DEBUG=jsreport && mocha test && standard",
+    "test": "set DEBUG=jsreport && mocha test --timeout=10000 && standard",
     "start": "jsreport-studio-start --httpPort 5488",
     "build": "jsreport-studio-build",
     "prepublish": "in-publish && jsreport-studio-build || not-in-publish"

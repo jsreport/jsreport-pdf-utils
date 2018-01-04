@@ -1,13 +1,7 @@
 import React, { Component } from 'react'
 import Studio from 'jsreport-studio'
 
-export default class DataEditor extends Component {
-  static propTypes = {
-    entity: React.PropTypes.object.isRequired,
-    tab: React.PropTypes.object.isRequired,
-    onUpdate: React.PropTypes.func.isRequired
-  }
-
+export default class PdfUtilsEditor extends Component {
   addOperation (entity) {
     Studio.updateEntity(Object.assign({}, entity, { pdfOperations: [...entity.pdfOperations || [], { type: 'merge' }] }))
   }
@@ -103,4 +97,10 @@ export default class DataEditor extends Component {
       </div>
     </div>)
   }
+}
+
+PdfUtilsEditor.propTypes = {
+  entity: React.PropTypes.object.isRequired,
+  tab: React.PropTypes.object.isRequired,
+  onUpdate: React.PropTypes.func.isRequired
 }
