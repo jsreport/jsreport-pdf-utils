@@ -20,6 +20,11 @@ export default class DataEditor extends Component {
     Studio.updateEntity(Object.assign({}, entity, { pdfOperations: entity.pdfOperations.filter((a, i) => i !== index) }))
   }
 
+  updatePdfUtils (entity, update) {
+    console.log(Object.assign({}, entity, { pdfUtils: { ...entity.pdfUtils, ...update } }))
+    Studio.updateEntity(Object.assign({}, entity, { pdfUtils: { ...entity.pdfUtils, ...update } }))
+  }
+
   moveDown (entity, index) {
     const pdfOperations = [...entity.pdfOperations]
     const tmp = pdfOperations[index + 1]
@@ -41,20 +46,28 @@ export default class DataEditor extends Component {
 
     return (<tr key={index}>
       <td>
-        <select value={operation.type} onChange={(v) => this.updateOperation(entity, index, { type: v.target.value })}>>
-          <option value='renderAndAppend'>render and append</option>
-          <option value='renderAndPrepend'>render and prepend</option>
-          <option value='renderForEveryPageAndMerge'>render and merge for every page</option>
-          <option value='renderOnceAndMergeToEveryPage'>render once and merge to every page</option>
-        </select>
-      </td>
-      <td>
         <select
           value={operation.templateShortid || 'empty'}
           onChange={(v) => this.updateOperation(entity, index, { templateShortid: v.target.value })}>
           <option key='empty' value='empty'>- not selected -</option>
           {templates.map((e) => <option key={e.shortid} value={e.shortid}>{e.name}</option>)}
         </select>
+      </td>
+      <td>
+        <select value={operation.type} onChange={(v) => this.updateOperation(entity, index, { type: v.target.value })}>>
+          <option value='merge'>merge</option>
+          <option value='append'>append</option>
+          <option value='prepend'>prepend</option>
+        </select>
+      </td>
+      <td>
+        <select value={operation.mergeLayer} onChange={(v) => this.updateOperation(entity, index, { mergeLayer: v.target.value })}>>
+          <option value='back'>back</option>
+          <option value='front'>front</option>
+        </select>
+      </td>
+      <td style={{textAlign: 'center'}}>
+        <input type='checkbox' checked={operation.renderForEveryPage === true} onChange={(v) => this.updateOperation(entity, index, { renderForEveryPage: v.target.checked })} />
       </td>
       <td>
         <button className='button' onClick={() => this.removeOperation(entity, index)}><i className='fa fa-times' /></button>
@@ -68,8 +81,10 @@ export default class DataEditor extends Component {
     return (<table className=''>
       <thead>
         <tr>
-          <th>Operation</th>
           <th>Template</th>
+          <th>Operation</th>
+          <th>Layer</th>
+          <th>Every page</th>
           <th />
         </tr>
       </thead>
@@ -82,10 +97,17 @@ export default class DataEditor extends Component {
   render () {
     const { entity } = this.props
 
-    return (<div className='block custom-editor'>
+    return (<div className='block custom-editor' style={{overflowX: 'auto'}}>
       <h1><i className='fa fa-file-pdf-o' /> pdf operations
       </h1>
       <div>
+        <div className='form-group'>
+          <label>Remove the main content back layer</label>
+          <input
+            type='checkbox' checked={entity.pdfUtils && entity.pdfUtils.removeContentBackLayer === true} onChange={(v) => this.updatePdfUtils(entity, { removeContentBackLayer: v.target.checked })} />
+        </div>
+      </div>
+      <div style={{marginTop: '1rem'}}>
         {this.renderOperations(entity)}
       </div>
       <div style={{marginTop: '1rem'}}>

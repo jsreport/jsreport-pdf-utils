@@ -1,5 +1,4 @@
 const JsReport = require('jsreport-core')
-const Promise = require('bluebird')
 const parsePdf = require('../lib/utils/parsePdf')
 require('should')
 
@@ -15,7 +14,7 @@ describe('pdf utils', () => {
     return jsreport.init()
   })
 
-  it('renderForEveryPageAndMerge should merge in static text', async () => {
+  it('merge should embed static text', async () => {
     await jsreport.documentStore.collection('templates').insert({
       content: '<div style"height: 2cm">header</div>',
       shortid: 'header',
@@ -28,7 +27,7 @@ describe('pdf utils', () => {
         content: 'foo',
         engine: 'none',
         recipe: 'chrome-pdf',
-        pdfOperations: [{ type: 'renderForEveryPageAndMerge', templateShortid: 'header' }],
+        pdfOperations: [{ type: 'merge', templateShortid: 'header' }],
         chrome: {
           marginTop: '3cm'
         }
@@ -36,11 +35,12 @@ describe('pdf utils', () => {
     })
 
     const parsedPdf = await parsePdf(result.content)
+
     parsedPdf.pages[0].texts.find((t) => t === 'foo').should.be.ok()
     parsedPdf.pages[0].texts.find((t) => t === 'header').should.be.ok()
   })
 
-  it('renderForEveryPageAndMerge should reach dynamic pageNumber for evrey page', async () => {
+  it('merge with renderForEveryPage flag should provide dynamic pageNumber for evrey page', async () => {
     await jsreport.documentStore.collection('templates').insert({
       content: '{{$pdf.pageNumber}}/{{$pdf.pages.length}}',
       shortid: 'header',
@@ -53,7 +53,7 @@ describe('pdf utils', () => {
         content: `<h1 style='page-break-before: always'>Hello</h1><h1 style='page-break-before: always'>Hello</h1>`,
         engine: 'none',
         recipe: 'chrome-pdf',
-        pdfOperations: [{ type: 'renderForEveryPageAndMerge', templateShortid: 'header' }]
+        pdfOperations: [{ type: 'merge', renderForEveryPage: true, templateShortid: 'header' }]
       }
     })
 
@@ -63,7 +63,7 @@ describe('pdf utils', () => {
     parsedPdf.pages[1].texts.find((t) => t === '2/2').should.be.ok()
   })
 
-  it('renderForEveryPageAndMerge should work for multiple operations', async () => {
+  it('merge should work for multiple operations', async () => {
     await jsreport.documentStore.collection('templates').insert({
       content: 'header',
       shortid: 'header',
@@ -83,7 +83,7 @@ describe('pdf utils', () => {
         content: `Foo`,
         engine: 'none',
         recipe: 'chrome-pdf',
-        pdfOperations: [{ type: 'renderForEveryPageAndMerge', templateShortid: 'header' }, { type: 'renderForEveryPageAndMerge', templateShortid: 'footer' }]
+        pdfOperations: [{ type: 'merge', templateShortid: 'header' }, { type: 'merge', templateShortid: 'footer' }]
       }
     })
 
@@ -92,7 +92,7 @@ describe('pdf utils', () => {
     parsedPdf.pages[0].texts.find((t) => t === 'footer').should.be.ok()
   })
 
-  it('renderOnceAndMergeToEveryPage should add static content', async () => {
+  it('merge with renderForEveryPage disabled should add static content', async () => {
     await jsreport.documentStore.collection('templates').insert({
       content: 'header',
       shortid: 'header',
@@ -105,7 +105,7 @@ describe('pdf utils', () => {
         content: `Foo`,
         engine: 'none',
         recipe: 'chrome-pdf',
-        pdfOperations: [{ type: 'renderOnceAndMergeToEveryPage', templateShortid: 'header' }]
+        pdfOperations: [{ type: 'merge', renderForEveryPage: false, templateShortid: 'header' }]
       }
     })
 
@@ -114,7 +114,7 @@ describe('pdf utils', () => {
     parsedPdf.pages[0].texts.find((t) => t === 'Foo').should.be.ok()
   })
 
-  it('renderAndAppend operation be able to append pages from another template', async () => {
+  it('append operation be able to append pages from another template', async () => {
     await jsreport.documentStore.collection('templates').insert({
       content: 'another page',
       shortid: 'anotherPage',
@@ -130,7 +130,7 @@ describe('pdf utils', () => {
         content: `foo`,
         engine: 'none',
         recipe: 'chrome-pdf',
-        pdfOperations: [{ type: 'renderAndAppend', templateShortid: 'anotherPage' }]
+        pdfOperations: [{ type: 'append', templateShortid: 'anotherPage' }]
       }
     })
 
@@ -139,7 +139,7 @@ describe('pdf utils', () => {
     parsedPdf.pages[1].texts.find((t) => t === 'another page').should.be.ok()
   })
 
-  it('renderAndPerpend operation be able to prepend pages from another template', async () => {
+  it('prepend operation be able to prepend pages from another template', async () => {
     await jsreport.documentStore.collection('templates').insert({
       content: 'another page',
       shortid: 'anotherPage',
@@ -155,7 +155,7 @@ describe('pdf utils', () => {
         content: `foo`,
         engine: 'none',
         recipe: 'chrome-pdf',
-        pdfOperations: [{ type: 'renderAndPrepend', templateShortid: 'anotherPage' }]
+        pdfOperations: [{ type: 'prepend', templateShortid: 'anotherPage' }]
       }
     })
 
@@ -163,16 +163,34 @@ describe('pdf utils', () => {
     parsedPdf.pages[0].texts.find((t) => t === 'another page').should.be.ok()
     parsedPdf.pages[1].texts.find((t) => t === 'foo').should.be.ok()
   })
-})
 
-/*
-function getPageId(data) {
-    let currentPageIndex = data.$pdf.pageNumber
-    while(currentPageIndex-- > 0) {
-        const pageid = data.$pdf.pages[currentPageIndex].texts.find((t) => t.startsWith('pageid'))
-        if (pageid) {
-            return pageid.split('-')[1]
-        }
+  // need to fix endless loop in the pdfjs the first
+  it.skip('merge should work for very long reports', async () => {
+    await jsreport.documentStore.collection('templates').insert({
+      content: '<div style"height: 2cm">header</div>',
+      shortid: 'header',
+      engine: 'none',
+      recipe: 'chrome-pdf'
+    })
+
+    let content = 'very long contentvery long content</br>'
+    for (let i = 0; i < 500; i++) {
+      content += 'very long contentvery long content</br>'
     }
-}
-*/
+
+    const result = await jsreport.render({
+      template: {
+        content: content,
+        engine: 'none',
+        recipe: 'chrome-pdf',
+        pdfOperations: [{ type: 'merge', templateShortid: 'header' }],
+        chrome: {
+          marginTop: '3cm'
+        }
+      }
+    })
+
+    const parsedPdf = await parsePdf(result.content)
+    parsedPdf.pages[0].texts.find((t) => t === 'header').should.be.ok()
+  })
+})
