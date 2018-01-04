@@ -14,11 +14,15 @@ describe('pdf utils', () => {
     return jsreport.init()
   })
 
-  it('merge should embed static text', async () => {
+  it.only('merge should embed static text', async () => {
     await jsreport.documentStore.collection('templates').insert({
       content: '<div style"height: 2cm">header</div>',
       shortid: 'header',
       engine: 'none',
+      chrome: {
+        width: '8cm',
+        height: '8cm'
+      },
       recipe: 'chrome-pdf'
     })
 
