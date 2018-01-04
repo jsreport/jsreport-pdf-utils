@@ -42,9 +42,10 @@
     "in-publish": "2.0.0",
     "jsreport-chrome-pdf": "0.1.0",
     "jsreport-core": "1.5.1",
+    "jsreport-handlebars": "1.1.2",
     "jsreport-studio-dev": "1.1.1",
     "jsreport-templates": "1.2.2",
-    "mocha": "4.0.1",   
+    "mocha": "4.0.1",
     "rimraf": "2.6.2",
     "should": "13.1.3",
     "standard": "10.0.3"
