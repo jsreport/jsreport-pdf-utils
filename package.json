@@ -40,7 +40,7 @@
     "eslint-config-standard-jsx": "4.0.2",
     "eslint-plugin-babel": "4.1.2",
     "in-publish": "2.0.0",
-    "jsreport-chrome-pdf": "0.1.0",
+    "jsreport-chrome-pdf": "0.2.0",
     "jsreport-core": "1.5.1",
     "jsreport-handlebars": "1.1.2",
     "jsreport-studio-dev": "1.1.1",
