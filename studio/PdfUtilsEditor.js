@@ -59,9 +59,9 @@ export default class PdfUtilsEditor extends Component {
         <input type='checkbox' disabled={operation.type !== 'merge'} checked={operation.renderForEveryPage === true} onChange={(v) => this.updateOperation(entity, index, { renderForEveryPage: v.target.checked })} />
       </td>
       <td>
-        <button className='button' onClick={() => this.removeOperation(entity, index)}><i className='fa fa-times' /></button>
-        {entity.pdfOperations[index - 1] ? <button className='button' onClick={() => this.moveUp(entity, index)}><i className='fa fa-arrow-up' /></button> : ''}
-        {entity.pdfOperations[index + 1] ? <button className='button' onClick={() => this.moveDown(entity, index)}><i className='fa fa-arrow-down' /></button> : ''}
+        <button className='button' style={{backgroundColor: '#c6c6c6'}} onClick={() => this.removeOperation(entity, index)}><i className='fa fa-times' /></button>
+        {entity.pdfOperations[index - 1] ? <button className='button' style={{backgroundColor: '#c6c6c6'}} onClick={() => this.moveUp(entity, index)}><i className='fa fa-arrow-up' /></button> : ''}
+        {entity.pdfOperations[index + 1] ? <button className='button' style={{backgroundColor: '#c6c6c6'}} onClick={() => this.moveDown(entity, index)}><i className='fa fa-arrow-down' /></button> : ''}
       </td>
     </tr>)
   }
