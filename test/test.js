@@ -168,8 +168,7 @@ describe('pdf utils', () => {
     parsedPdf.pages[1].texts.find((t) => t === 'foo').should.be.ok()
   })
 
-  // need to fix endless loop in the pdfjs the first
-  it.skip('merge should work for very long reports', async () => {
+  it('merge should work for very long reports', async () => {
     await jsreport.documentStore.collection('templates').insert({
       content: '<div style"height: 2cm">header</div>',
       shortid: 'header',
@@ -178,7 +177,7 @@ describe('pdf utils', () => {
     })
 
     let content = 'very long contentvery long content</br>'
-    for (let i = 0; i < 500; i++) {
+    for (let i = 0; i < 5000; i++) {
       content += 'very long contentvery long content</br>'
     }
 

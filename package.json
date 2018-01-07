@@ -4,7 +4,7 @@
   "description": "jsreport extension providing pdf operations like merge or concatenation",
   "main": "index.js",
   "scripts": {
-    "test": "set DEBUG=jsreport && mocha test --timeout=10000 && standard",
+    "test": "set DEBUG=jsreport && mocha test --timeout=20000 && standard",
     "start": "jsreport-studio-start --httpPort 5488",
     "build": "jsreport-studio-build",
     "prepublish": "in-publish && jsreport-studio-build || not-in-publish"
@@ -40,6 +40,7 @@
     "eslint-config-standard-jsx": "4.0.2",
     "eslint-plugin-babel": "4.1.2",
     "in-publish": "2.0.0",
+    "jsreport": "1.9.2",
     "jsreport-chrome-pdf": "0.2.0",
     "jsreport-core": "1.5.1",
     "jsreport-handlebars": "1.1.2",
@@ -52,8 +53,8 @@
   },
   "dependencies": {
     "bluebird": "3.5.1",
-    "pdfjs": "2.0.0-alpha.3",
-    "pdf2json": "1.1.7"
+    "pdf2json": "1.1.7",
+    "jsreport-pdfjs": "0.2.0"
   },
   "files": [
     "lib",
