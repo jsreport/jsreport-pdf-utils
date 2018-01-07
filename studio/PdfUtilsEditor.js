@@ -31,7 +31,7 @@ export default class PdfUtilsEditor extends Component {
   }
 
   renderOperation (entity, operation, index) {
-    const templates = Studio.getAllEntities().filter((e) => e.__entitySet === 'templates')
+    const templates = Studio.getAllEntities().filter((e) => e.__entitySet === 'templates').filter((t) => t.shortid !== entity.shortid)
 
     return (<tr key={index}>
       <td>
