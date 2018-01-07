@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import Studio from 'jsreport-studio'
+import styles from './style.scss'
 
 export default class PdfUtilsEditor extends Component {
   addOperation (entity) {
@@ -50,30 +51,33 @@ export default class PdfUtilsEditor extends Component {
         </select>
       </td>
       <td>
-        <select disabled={operation.type !== 'merge'} alue={operation.mergeLayer} onChange={(v) => this.updateOperation(entity, index, { mergeLayer: v.target.value })}>>
-          <option value='back'>back</option>
-          <option value='front'>front</option>
-        </select>
+        <input type='checkbox' disabled={operation.type !== 'merge'} checked={operation.mergeToFront === true} onChange={(v) => this.updateOperation(entity, index, { mergeToFront: v.target.checked })} />
       </td>
-      <td style={{textAlign: 'center'}}>
+      <td>
         <input type='checkbox' disabled={operation.type !== 'merge'} checked={operation.renderForEveryPage === true} onChange={(v) => this.updateOperation(entity, index, { renderForEveryPage: v.target.checked })} />
       </td>
       <td>
         <button className='button' style={{backgroundColor: '#c6c6c6'}} onClick={() => this.removeOperation(entity, index)}><i className='fa fa-times' /></button>
+      </td>
+      <td>
         {entity.pdfOperations[index - 1] ? <button className='button' style={{backgroundColor: '#c6c6c6'}} onClick={() => this.moveUp(entity, index)}><i className='fa fa-arrow-up' /></button> : ''}
+      </td>
+      <td>
         {entity.pdfOperations[index + 1] ? <button className='button' style={{backgroundColor: '#c6c6c6'}} onClick={() => this.moveDown(entity, index)}><i className='fa fa-arrow-down' /></button> : ''}
       </td>
     </tr>)
   }
 
   renderOperations (entity) {
-    return (<table className=''>
+    return (<table className={styles.operationTable}>
       <thead>
         <tr>
           <th>Template</th>
           <th>Operation</th>
-          <th>Layer</th>
-          <th>Every page</th>
+          <th>Merge to front</th>
+          <th>Render for every page</th>
+          <th />
+          <th />
           <th />
         </tr>
       </thead>
