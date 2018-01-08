@@ -1,4 +1,4 @@
-# jsreport-version-control
+# jsreport-pdf-utils
 [![NPM Version](http://img.shields.io/npm/v/jsreport-pdf-utils.svg?style=flat-square)](https://npmjs.com/package/jsreport-pdf-utils)
 [![Build Status](https://travis-ci.org/jsreport/jsreport-pdf-utils.png?branch=master)](https://travis-ci.org/jsreport/jsreport-pdf-utils)
 
