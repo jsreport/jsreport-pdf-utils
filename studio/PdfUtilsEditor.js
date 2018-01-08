@@ -32,7 +32,8 @@ export default class PdfUtilsEditor extends Component {
   }
 
   renderOperation (entity, operation, index) {
-    const templates = Studio.getAllEntities().filter((e) => e.__entitySet === 'templates').filter((t) => t.shortid !== entity.shortid)
+    const templates = Studio.getAllEntities()
+      .filter((e) => e.__entitySet === 'templates' && e.shortid !== entity.shortid && e.recipe.includes('pdf'))
 
     return (<tr key={index}>
       <td>
@@ -93,6 +94,10 @@ export default class PdfUtilsEditor extends Component {
     return (<div className='block custom-editor' style={{overflowX: 'auto'}}>
       <h1><i className='fa fa-file-pdf-o' /> pdf operations
       </h1>
+      <p style={{marginTop: '1rem'}}>
+        Use merge/append operations to add dynamic headers or concatenate multiple pdf reports into one.
+        See more docs and examples <a href='https://jsreport.net/learn/pdf-utils'>here</a>.
+      </p>
       <div style={{marginTop: '1rem'}}>
         {this.renderOperations(entity)}
       </div>
