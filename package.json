@@ -44,6 +44,7 @@
     "jsreport-chrome-pdf": "0.2.0",
     "jsreport-core": "1.5.1",
     "jsreport-handlebars": "1.1.2",
+    "jsreport-jsrender": "1.0.2",
     "jsreport-studio-dev": "1.1.1",
     "jsreport-templates": "1.2.2",
     "mocha": "4.0.1",

@@ -10,6 +10,7 @@ describe('pdf utils', () => {
     jsreport.use(require('jsreport-templates')())
     jsreport.use(require('jsreport-chrome-pdf')())
     jsreport.use(require('jsreport-handlebars')())
+    jsreport.use(require('jsreport-jsrender')())
     jsreport.use(require('../')())
     return jsreport.init()
   })
@@ -65,6 +66,95 @@ describe('pdf utils', () => {
 
     parsedPdf.pages[0].texts.find((t) => t === '1/2').should.be.ok()
     parsedPdf.pages[1].texts.find((t) => t === '2/2').should.be.ok()
+  })
+
+  it('merge with renderForEveryPage should be able to use pdfSetScope helper', async () => {
+    await jsreport.documentStore.collection('templates').insert({
+      content: '{{$pdf.currentPage.scope}}',
+      shortid: 'header',
+      engine: 'handlebars',
+      recipe: 'chrome-pdf'
+    })
+
+    const result = await jsreport.render({
+      template: {
+        content: `<h1 style='page-break-before: always'>Hello{{{pdfSetScope 1}}}</h1><h1 style='page-break-before: always'>Hello{{{pdfSetScope 2}}}</h1>`,
+        engine: 'handlebars',
+        recipe: 'chrome-pdf',
+        pdfOperations: [{ type: 'merge', renderForEveryPage: true, templateShortid: 'header' }]
+      }
+    })
+
+    const parsedPdf = await parsePdf(result.content)
+    parsedPdf.pages[0].texts.find((t) => t === '1').should.be.ok()
+    parsedPdf.pages[1].texts.find((t) => t === '2').should.be.ok()
+  })
+
+  it('merge with renderForEveryPage should be able to use pdfSetScope helper with hash params', async () => {
+    await jsreport.documentStore.collection('templates').insert({
+      content: '{{$pdf.currentPage.scope.foo}}',
+      shortid: 'header',
+      engine: 'handlebars',
+      recipe: 'chrome-pdf'
+    })
+
+    const result = await jsreport.render({
+      template: {
+        content: `{{{pdfSetScope foo="1"}}}`,
+        engine: 'handlebars',
+        recipe: 'chrome-pdf',
+        pdfOperations: [{ type: 'merge', renderForEveryPage: true, templateShortid: 'header' }]
+      }
+    })
+
+    const parsedPdf = await parsePdf(result.content)
+    parsedPdf.pages[0].texts.find((t) => t === '1').should.be.ok()
+  })
+
+  it('merge with renderForEveryPage should be able to use pdfSetScope helper and keep number type', async () => {
+    await jsreport.documentStore.collection('templates').insert({
+      content: '{{test $pdf.currentPage.scope}}',
+      shortid: 'header',
+      engine: 'handlebars',
+      recipe: 'chrome-pdf',
+      helpers: 'function test(v) { return typeof v }'
+    })
+
+    const result = await jsreport.render({
+      template: {
+        content: `{{{pdfSetScope num}}}`,
+        engine: 'handlebars',
+        recipe: 'chrome-pdf',
+        pdfOperations: [{ type: 'merge', renderForEveryPage: true, templateShortid: 'header' }]
+      },
+      data: {
+        num: 1
+      }
+    })
+
+    const parsedPdf = await parsePdf(result.content)
+    parsedPdf.pages[0].texts.find((t) => t === 'number').should.be.ok()
+  })
+
+  it('merge with renderForEveryPage should be able to use pdfSetScope helper with hash params with jsrender', async () => {
+    await jsreport.documentStore.collection('templates').insert({
+      content: '{{:$pdf.currentPage.scope.foo}}',
+      shortid: 'header',
+      engine: 'jsrender',
+      recipe: 'chrome-pdf'
+    })
+
+    const result = await jsreport.render({
+      template: {
+        content: `{{pdfSetScope foo="1"/}}`,
+        engine: 'jsrender',
+        recipe: 'chrome-pdf',
+        pdfOperations: [{ type: 'merge', renderForEveryPage: true, templateShortid: 'header' }]
+      }
+    })
+
+    const parsedPdf = await parsePdf(result.content)
+    parsedPdf.pages[0].texts.find((t) => t === '1').should.be.ok()
   })
 
   it('merge should work for multiple operations', async () => {
