@@ -39,10 +39,10 @@ describe('pdf utils', () => {
       }
     })
 
-    const parsedPdf = await parsePdf(result.content)
+    const parsedPdf = await parsePdf(result.content, true)
 
-    parsedPdf.pages[0].texts.find((t) => t === 'foo').should.be.ok()
-    parsedPdf.pages[0].texts.find((t) => t === 'header').should.be.ok()
+    parsedPdf.pages[0].text.includes('foo').should.be.ok()
+    parsedPdf.pages[0].text.includes('header').should.be.ok()
   })
 
   it('merge with renderForEveryPage flag should provide dynamic pageNumber for evrey page', async () => {
@@ -62,15 +62,15 @@ describe('pdf utils', () => {
       }
     })
 
-    const parsedPdf = await parsePdf(result.content)
+    const parsedPdf = await parsePdf(result.content, true)
 
-    parsedPdf.pages[0].texts.find((t) => t === '1/2').should.be.ok()
-    parsedPdf.pages[1].texts.find((t) => t === '2/2').should.be.ok()
+    parsedPdf.pages[0].text.includes('1/2').should.be.ok()
+    parsedPdf.pages[1].text.includes('2/2').should.be.ok()
   })
 
-  it('merge with renderForEveryPage should be able to use pdfSetScope helper', async () => {
+  it('merge with renderForEveryPage should be able to use pdfCreatePagesGroup helper', async () => {
     await jsreport.documentStore.collection('templates').insert({
-      content: '{{$pdf.currentPage.scope}}',
+      content: '{{$pdf.currentPage.group}}',
       shortid: 'header',
       engine: 'handlebars',
       recipe: 'chrome-pdf'
@@ -78,21 +78,22 @@ describe('pdf utils', () => {
 
     const result = await jsreport.render({
       template: {
-        content: `<h1 style='page-break-before: always'>Hello{{{pdfSetScope 1}}}</h1><h1 style='page-break-before: always'>Hello{{{pdfSetScope 2}}}</h1>`,
+        content: `{{{pdfCreatePagesGroup "Some Text"}}}`,
         engine: 'handlebars',
         recipe: 'chrome-pdf',
         pdfOperations: [{ type: 'merge', renderForEveryPage: true, templateShortid: 'header' }]
       }
     })
 
-    const parsedPdf = await parsePdf(result.content)
-    parsedPdf.pages[0].texts.find((t) => t === '1').should.be.ok()
-    parsedPdf.pages[1].texts.find((t) => t === '2').should.be.ok()
+    const parsedPdf = await parsePdf(result.content, true)
+
+    parsedPdf.pages[0].group.should.be.eql('Some Text')
+    parsedPdf.pages[0].text.includes('Some Text').should.be.true()
   })
 
-  it('merge with renderForEveryPage should be able to use pdfSetScope helper with hash params', async () => {
+  it('merge with renderForEveryPage should be able to group multiple pages using single pdfCreatePagesGroup helper', async () => {
     await jsreport.documentStore.collection('templates').insert({
-      content: '{{$pdf.currentPage.scope.foo}}',
+      content: '{{$pdf.currentPage.group}}',
       shortid: 'header',
       engine: 'handlebars',
       recipe: 'chrome-pdf'
@@ -100,20 +101,43 @@ describe('pdf utils', () => {
 
     const result = await jsreport.render({
       template: {
-        content: `{{{pdfSetScope foo="1"}}}`,
+        content: `{{{pdfCreatePagesGroup "1"}}}<div style='page-break-before: always'>hello</div>`,
         engine: 'handlebars',
         recipe: 'chrome-pdf',
         pdfOperations: [{ type: 'merge', renderForEveryPage: true, templateShortid: 'header' }]
       }
     })
 
-    const parsedPdf = await parsePdf(result.content)
-    parsedPdf.pages[0].texts.find((t) => t === '1').should.be.ok()
+    const parsedPdf = await parsePdf(result.content, true)
+
+    parsedPdf.pages[0].group.should.be.eql('1')
+    parsedPdf.pages[1].group.should.be.eql('1')
   })
 
-  it('merge with renderForEveryPage should be able to use pdfSetScope helper and keep number type', async () => {
+  it('merge with renderForEveryPage should be able to use pdfCreatePagesGroup helper with hash params', async () => {
     await jsreport.documentStore.collection('templates').insert({
-      content: '{{test $pdf.currentPage.scope}}',
+      content: '{{$pdf.currentPage.group.foo}}',
+      shortid: 'header',
+      engine: 'handlebars',
+      recipe: 'chrome-pdf'
+    })
+
+    const result = await jsreport.render({
+      template: {
+        content: `{{{pdfCreatePagesGroup foo="1"}}}`,
+        engine: 'handlebars',
+        recipe: 'chrome-pdf',
+        pdfOperations: [{ type: 'merge', renderForEveryPage: true, templateShortid: 'header' }]
+      }
+    })
+
+    const parsedPdf = await parsePdf(result.content, true)
+    parsedPdf.pages[0].text.includes('1').should.be.ok()
+  })
+
+  it('merge with renderForEveryPage should be able to use pdfCreatePagesGroup helper and keep number type', async () => {
+    await jsreport.documentStore.collection('templates').insert({
+      content: '{{test $pdf.currentPage.group}}',
       shortid: 'header',
       engine: 'handlebars',
       recipe: 'chrome-pdf',
@@ -122,7 +146,7 @@ describe('pdf utils', () => {
 
     const result = await jsreport.render({
       template: {
-        content: `{{{pdfSetScope num}}}`,
+        content: `{{{pdfCreatePagesGroup num}}}`,
         engine: 'handlebars',
         recipe: 'chrome-pdf',
         pdfOperations: [{ type: 'merge', renderForEveryPage: true, templateShortid: 'header' }]
@@ -132,13 +156,13 @@ describe('pdf utils', () => {
       }
     })
 
-    const parsedPdf = await parsePdf(result.content)
-    parsedPdf.pages[0].texts.find((t) => t === 'number').should.be.ok()
+    const parsedPdf = await parsePdf(result.content, true)
+    parsedPdf.pages[0].text.includes('number').should.be.ok()
   })
 
-  it('merge with renderForEveryPage should be able to use pdfSetScope helper with hash params with jsrender', async () => {
+  it('merge with renderForEveryPage should be able to use pdfCreatePagesGroup helper with hash params with jsrender', async () => {
     await jsreport.documentStore.collection('templates').insert({
-      content: '{{:$pdf.currentPage.scope.foo}}',
+      content: '{{:$pdf.currentPage.group.foo}}',
       shortid: 'header',
       engine: 'jsrender',
       recipe: 'chrome-pdf'
@@ -146,15 +170,40 @@ describe('pdf utils', () => {
 
     const result = await jsreport.render({
       template: {
-        content: `{{pdfSetScope foo="1"/}}`,
+        content: `{{pdfCreatePagesGroup foo="1"/}}`,
         engine: 'jsrender',
         recipe: 'chrome-pdf',
         pdfOperations: [{ type: 'merge', renderForEveryPage: true, templateShortid: 'header' }]
       }
     })
 
-    const parsedPdf = await parsePdf(result.content)
-    parsedPdf.pages[0].texts.find((t) => t === '1').should.be.ok()
+    const parsedPdf = await parsePdf(result.content, true)
+    parsedPdf.pages[0].text.includes('1').should.be.ok()
+  })
+
+  it('merge with renderForEveryPage should be able to use multiple pdfAddPageItem helper', async () => {
+    await jsreport.documentStore.collection('templates').insert({
+      content: '{{$pdf.currentPage.items.[0]}}{{$pdf.currentPage.items.[1]}}',
+      shortid: 'header',
+      engine: 'handlebars',
+      recipe: 'chrome-pdf'
+    })
+
+    const result = await jsreport.render({
+      template: {
+        content: `{{{pdfAddPageItem "a"}}}{{{pdfAddPageItem "b"}}}`,
+        engine: 'handlebars',
+        recipe: 'chrome-pdf',
+        pdfOperations: [{ type: 'merge', renderForEveryPage: true, templateShortid: 'header' }]
+      }
+    })
+
+    const parsedPdf = await parsePdf(result.content, true)
+
+    parsedPdf.pages[0].items.should.have.length(2)
+    parsedPdf.pages[0].items[0].should.be.eql('a')
+    parsedPdf.pages[0].items[1].should.be.eql('b')
+    parsedPdf.pages[0].text.includes('ab').should.be.true()
   })
 
   it('merge should work for multiple operations', async () => {
@@ -181,9 +230,9 @@ describe('pdf utils', () => {
       }
     })
 
-    const parsedPdf = await parsePdf(result.content)
-    parsedPdf.pages[0].texts.find((t) => t === 'header').should.be.ok()
-    parsedPdf.pages[0].texts.find((t) => t === 'footer').should.be.ok()
+    const parsedPdf = await parsePdf(result.content, true)
+    parsedPdf.pages[0].text.includes('header').should.be.ok()
+    parsedPdf.pages[0].text.includes('footer').should.be.ok()
   })
 
   it('merge with renderForEveryPage disabled should add static content', async () => {
@@ -203,9 +252,9 @@ describe('pdf utils', () => {
       }
     })
 
-    const parsedPdf = await parsePdf(result.content)
-    parsedPdf.pages[0].texts.find((t) => t === 'header').should.be.ok()
-    parsedPdf.pages[0].texts.find((t) => t === 'Foo').should.be.ok()
+    const parsedPdf = await parsePdf(result.content, true)
+    parsedPdf.pages[0].text.includes('header').should.be.ok()
+    parsedPdf.pages[0].text.includes('Foo').should.be.ok()
   })
 
   it('append operation be able to append pages from another template', async () => {
@@ -228,9 +277,9 @@ describe('pdf utils', () => {
       }
     })
 
-    const parsedPdf = await parsePdf(result.content)
-    parsedPdf.pages[0].texts.find((t) => t === 'foo').should.be.ok()
-    parsedPdf.pages[1].texts.find((t) => t === 'another page').should.be.ok()
+    const parsedPdf = await parsePdf(result.content, true)
+    parsedPdf.pages[0].text.includes('foo').should.be.ok()
+    parsedPdf.pages[1].text.includes('another page').should.be.ok()
   })
 
   it('prepend operation be able to prepend pages from another template', async () => {
@@ -253,9 +302,9 @@ describe('pdf utils', () => {
       }
     })
 
-    const parsedPdf = await parsePdf(result.content)
-    parsedPdf.pages[0].texts.find((t) => t === 'another page').should.be.ok()
-    parsedPdf.pages[1].texts.find((t) => t === 'foo').should.be.ok()
+    const parsedPdf = await parsePdf(result.content, true)
+    parsedPdf.pages[0].text.includes('another page').should.be.ok()
+    parsedPdf.pages[1].text.includes('foo').should.be.ok()
   })
 
   it('merge should work for very long reports', async () => {
@@ -283,7 +332,7 @@ describe('pdf utils', () => {
       }
     })
 
-    const parsedPdf = await parsePdf(result.content)
-    parsedPdf.pages[0].texts.find((t) => t === 'header').should.be.ok()
+    const parsedPdf = await parsePdf(result.content, true)
+    parsedPdf.pages[0].text.includes('header').should.be.ok()
   })
 })
