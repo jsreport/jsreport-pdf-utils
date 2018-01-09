@@ -70,7 +70,7 @@ describe('pdf utils', () => {
 
   it('merge with renderForEveryPage should be able to use pdfCreatePagesGroup helper', async () => {
     await jsreport.documentStore.collection('templates').insert({
-      content: '{{$pdf.currentPage.group}}',
+      content: '{{#with (lookup $pdf.pages $pdf.pageIndex)}}{{group}}{{/with}}',
       shortid: 'header',
       engine: 'handlebars',
       recipe: 'chrome-pdf'
@@ -93,7 +93,7 @@ describe('pdf utils', () => {
 
   it('merge with renderForEveryPage should be able to group multiple pages using single pdfCreatePagesGroup helper', async () => {
     await jsreport.documentStore.collection('templates').insert({
-      content: '{{$pdf.currentPage.group}}',
+      content: '{{#with (lookup $pdf.pages $pdf.pageIndex)}}{{group}}{{/with}}',
       shortid: 'header',
       engine: 'handlebars',
       recipe: 'chrome-pdf'
@@ -116,7 +116,7 @@ describe('pdf utils', () => {
 
   it('merge with renderForEveryPage should be able to use pdfCreatePagesGroup helper with hash params', async () => {
     await jsreport.documentStore.collection('templates').insert({
-      content: '{{$pdf.currentPage.group.foo}}',
+      content: '{{#with (lookup $pdf.pages $pdf.pageIndex)}}{{group.foo}}{{/with}}',
       shortid: 'header',
       engine: 'handlebars',
       recipe: 'chrome-pdf'
@@ -137,7 +137,7 @@ describe('pdf utils', () => {
 
   it('merge with renderForEveryPage should be able to use pdfCreatePagesGroup helper and keep number type', async () => {
     await jsreport.documentStore.collection('templates').insert({
-      content: '{{test $pdf.currentPage.group}}',
+      content: '{{#with (lookup $pdf.pages $pdf.pageIndex)}}{{test group}}{{/with}}',
       shortid: 'header',
       engine: 'handlebars',
       recipe: 'chrome-pdf',
@@ -162,7 +162,7 @@ describe('pdf utils', () => {
 
   it('merge with renderForEveryPage should be able to use pdfCreatePagesGroup helper with hash params with jsrender', async () => {
     await jsreport.documentStore.collection('templates').insert({
-      content: '{{:$pdf.currentPage.group.foo}}',
+      content: '{{:$pdf.pages[$pdf.pageIndex].group.foo}}',
       shortid: 'header',
       engine: 'jsrender',
       recipe: 'chrome-pdf'
@@ -183,7 +183,7 @@ describe('pdf utils', () => {
 
   it('merge with renderForEveryPage should be able to use multiple pdfAddPageItem helper', async () => {
     await jsreport.documentStore.collection('templates').insert({
-      content: '{{$pdf.currentPage.items.[0]}}{{$pdf.currentPage.items.[1]}}',
+      content: '{{#with (lookup $pdf.pages $pdf.pageIndex)}}{{items.[0]}}{{items.[1]}}{{/with}}',
       shortid: 'header',
       engine: 'handlebars',
       recipe: 'chrome-pdf'
