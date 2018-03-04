@@ -8,7 +8,11 @@ describe('pdf utils', () => {
   beforeEach(async () => {
     jsreport = JsReport({ tasks: { strategy: 'in-process' } })
     jsreport.use(require('jsreport-templates')())
-    jsreport.use(require('jsreport-chrome-pdf')())
+    jsreport.use(require('jsreport-chrome-pdf')({
+      launchOptions: {
+        args: ['--no-sandbox']
+      }
+    }))
     jsreport.use(require('jsreport-handlebars')())
     jsreport.use(require('jsreport-jsrender')())
     jsreport.use(require('../')())
