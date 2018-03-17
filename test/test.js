@@ -23,6 +23,7 @@ describe('pdf utils', () => {
     await jsreport.documentStore.collection('templates').insert({
       content: '<div style"height: 2cm">header</div>',
       shortid: 'header',
+      name: 'header',
       engine: 'none',
       chrome: {
         width: '8cm',
@@ -34,6 +35,7 @@ describe('pdf utils', () => {
     const result = await jsreport.render({
       template: {
         content: 'foo',
+        name: 'content',
         engine: 'none',
         recipe: 'chrome-pdf',
         pdfOperations: [{ type: 'merge', templateShortid: 'header' }],
@@ -53,6 +55,7 @@ describe('pdf utils', () => {
     await jsreport.documentStore.collection('templates').insert({
       content: '{{$pdf.pageNumber}}/{{$pdf.pages.length}}',
       shortid: 'header',
+      name: 'header',
       engine: 'handlebars',
       recipe: 'chrome-pdf'
     })
@@ -61,6 +64,7 @@ describe('pdf utils', () => {
       template: {
         content: `<h1 style='page-break-before: always'>Hello</h1><h1 style='page-break-before: always'>Hello</h1>`,
         engine: 'none',
+        name: 'content',
         recipe: 'chrome-pdf',
         pdfOperations: [{ type: 'merge', renderForEveryPage: true, templateShortid: 'header' }]
       }
@@ -76,6 +80,7 @@ describe('pdf utils', () => {
     await jsreport.documentStore.collection('templates').insert({
       content: '{{#with (lookup $pdf.pages $pdf.pageIndex)}}{{group}}{{/with}}',
       shortid: 'header',
+      name: 'header',
       engine: 'handlebars',
       recipe: 'chrome-pdf'
     })
@@ -84,6 +89,7 @@ describe('pdf utils', () => {
       template: {
         content: `{{{pdfCreatePagesGroup "Some Text"}}}`,
         engine: 'handlebars',
+        name: 'content',
         recipe: 'chrome-pdf',
         pdfOperations: [{ type: 'merge', renderForEveryPage: true, templateShortid: 'header' }]
       }
@@ -99,6 +105,7 @@ describe('pdf utils', () => {
     await jsreport.documentStore.collection('templates').insert({
       content: '{{#with (lookup $pdf.pages $pdf.pageIndex)}}{{group}}{{/with}}',
       shortid: 'header',
+      name: 'header',
       engine: 'handlebars',
       recipe: 'chrome-pdf'
     })
@@ -107,6 +114,7 @@ describe('pdf utils', () => {
       template: {
         content: `{{{pdfCreatePagesGroup "1"}}}<div style='page-break-before: always'>hello</div>`,
         engine: 'handlebars',
+        name: 'content',
         recipe: 'chrome-pdf',
         pdfOperations: [{ type: 'merge', renderForEveryPage: true, templateShortid: 'header' }]
       }
@@ -122,6 +130,7 @@ describe('pdf utils', () => {
     await jsreport.documentStore.collection('templates').insert({
       content: '{{#with (lookup $pdf.pages $pdf.pageIndex)}}{{group.foo}}{{/with}}',
       shortid: 'header',
+      name: 'header',
       engine: 'handlebars',
       recipe: 'chrome-pdf'
     })
@@ -143,6 +152,7 @@ describe('pdf utils', () => {
     await jsreport.documentStore.collection('templates').insert({
       content: '{{#with (lookup $pdf.pages $pdf.pageIndex)}}{{test group}}{{/with}}',
       shortid: 'header',
+      name: 'header',
       engine: 'handlebars',
       recipe: 'chrome-pdf',
       helpers: 'function test(v) { return typeof v }'
@@ -152,6 +162,7 @@ describe('pdf utils', () => {
       template: {
         content: `{{{pdfCreatePagesGroup num}}}`,
         engine: 'handlebars',
+        name: 'content',
         recipe: 'chrome-pdf',
         pdfOperations: [{ type: 'merge', renderForEveryPage: true, templateShortid: 'header' }]
       },
@@ -168,6 +179,7 @@ describe('pdf utils', () => {
     await jsreport.documentStore.collection('templates').insert({
       content: '{{:$pdf.pages[$pdf.pageIndex].group.foo}}',
       shortid: 'header',
+      name: 'header',
       engine: 'jsrender',
       recipe: 'chrome-pdf'
     })
@@ -176,6 +188,7 @@ describe('pdf utils', () => {
       template: {
         content: `{{pdfCreatePagesGroup foo="1"/}}`,
         engine: 'jsrender',
+        name: 'content',
         recipe: 'chrome-pdf',
         pdfOperations: [{ type: 'merge', renderForEveryPage: true, templateShortid: 'header' }]
       }
@@ -189,6 +202,7 @@ describe('pdf utils', () => {
     await jsreport.documentStore.collection('templates').insert({
       content: '{{#with (lookup $pdf.pages $pdf.pageIndex)}}{{items.[0]}}{{items.[1]}}{{/with}}',
       shortid: 'header',
+      name: 'header',
       engine: 'handlebars',
       recipe: 'chrome-pdf'
     })
@@ -196,6 +210,7 @@ describe('pdf utils', () => {
     const result = await jsreport.render({
       template: {
         content: `{{{pdfAddPageItem "a"}}}{{{pdfAddPageItem "b"}}}`,
+        name: 'content',
         engine: 'handlebars',
         recipe: 'chrome-pdf',
         pdfOperations: [{ type: 'merge', renderForEveryPage: true, templateShortid: 'header' }]
@@ -213,6 +228,7 @@ describe('pdf utils', () => {
   it('merge should work for multiple operations', async () => {
     await jsreport.documentStore.collection('templates').insert({
       content: 'header',
+      name: 'header',
       shortid: 'header',
       engine: 'handlebars',
       recipe: 'chrome-pdf'
@@ -220,6 +236,7 @@ describe('pdf utils', () => {
 
     await jsreport.documentStore.collection('templates').insert({
       content: 'footer',
+      name: 'footer',
       shortid: 'footer',
       engine: 'handlebars',
       recipe: 'chrome-pdf'
@@ -228,6 +245,7 @@ describe('pdf utils', () => {
     const result = await jsreport.render({
       template: {
         content: `Foo`,
+        name: 'content',
         engine: 'none',
         recipe: 'chrome-pdf',
         pdfOperations: [{ type: 'merge', templateShortid: 'header' }, { type: 'merge', templateShortid: 'footer' }]
@@ -242,6 +260,7 @@ describe('pdf utils', () => {
   it('merge with renderForEveryPage disabled should add static content', async () => {
     await jsreport.documentStore.collection('templates').insert({
       content: 'header',
+      name: 'header',
       shortid: 'header',
       engine: 'handlebars',
       recipe: 'chrome-pdf'
@@ -250,6 +269,7 @@ describe('pdf utils', () => {
     const result = await jsreport.render({
       template: {
         content: `Foo`,
+        name: 'content',
         engine: 'none',
         recipe: 'chrome-pdf',
         pdfOperations: [{ type: 'merge', renderForEveryPage: false, templateShortid: 'header' }]
@@ -265,6 +285,7 @@ describe('pdf utils', () => {
     await jsreport.documentStore.collection('templates').insert({
       content: 'another page',
       shortid: 'anotherPage',
+      name: 'anotherPage',
       engine: 'handlebars',
       recipe: 'chrome-pdf',
       chrome: {
@@ -276,6 +297,7 @@ describe('pdf utils', () => {
       template: {
         content: `foo`,
         engine: 'none',
+        name: 'foo',
         recipe: 'chrome-pdf',
         pdfOperations: [{ type: 'append', templateShortid: 'anotherPage' }]
       }
@@ -290,6 +312,7 @@ describe('pdf utils', () => {
     await jsreport.documentStore.collection('templates').insert({
       content: 'another page',
       shortid: 'anotherPage',
+      name: 'anotherPage',
       engine: 'handlebars',
       recipe: 'chrome-pdf',
       chrome: {
@@ -300,6 +323,7 @@ describe('pdf utils', () => {
     const result = await jsreport.render({
       template: {
         content: `foo`,
+        name: 'foo',
         engine: 'none',
         recipe: 'chrome-pdf',
         pdfOperations: [{ type: 'prepend', templateShortid: 'anotherPage' }]
@@ -315,6 +339,7 @@ describe('pdf utils', () => {
     await jsreport.documentStore.collection('templates').insert({
       content: '<div style"height: 2cm">header</div>',
       shortid: 'header',
+      name: 'header',
       engine: 'none',
       recipe: 'chrome-pdf'
     })
@@ -327,6 +352,7 @@ describe('pdf utils', () => {
     const result = await jsreport.render({
       template: {
         content: content,
+        name: 'content',
         engine: 'none',
         recipe: 'chrome-pdf',
         pdfOperations: [{ type: 'merge', templateShortid: 'header' }],
