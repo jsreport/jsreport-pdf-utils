@@ -71,7 +71,7 @@
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	_jsreportStudio2.default.addPropertiesComponent(_TemplatePdfUtilsProperties2.default.title, _TemplatePdfUtilsProperties2.default, function (entity) {
-	  return entity.__entitySet === 'templates';
+	  return entity.__entitySet === 'templates' && entity.recipe.includes('pdf');
 	});
 	
 	_jsreportStudio2.default.addEditorComponent(Constants.PDF_UTILS_TAB_EDITOR, _PdfUtilsEditor2.default);
@@ -585,8 +585,8 @@
 	if(false) {
 		// When the styles change, update the <style> tags
 		if(!content.locals) {
-			module.hot.accept("!!./../node_modules/css-loader/index.js?modules&importLoaders=2&sourceMap&localIdentName=[local]___[hash:base64:5]!./../node_modules/postcss-loader/index.js!./../node_modules/sass-loader/index.js?outputStyle=expanded&sourceMap!./style.scss", function() {
-				var newContent = require("!!./../node_modules/css-loader/index.js?modules&importLoaders=2&sourceMap&localIdentName=[local]___[hash:base64:5]!./../node_modules/postcss-loader/index.js!./../node_modules/sass-loader/index.js?outputStyle=expanded&sourceMap!./style.scss");
+			module.hot.accept("!!../node_modules/css-loader/index.js?modules&importLoaders=2&sourceMap&localIdentName=[local]___[hash:base64:5]!../node_modules/postcss-loader/index.js!../node_modules/sass-loader/index.js?outputStyle=expanded&sourceMap!./style.scss", function() {
+				var newContent = require("!!../node_modules/css-loader/index.js?modules&importLoaders=2&sourceMap&localIdentName=[local]___[hash:base64:5]!../node_modules/postcss-loader/index.js!../node_modules/sass-loader/index.js?outputStyle=expanded&sourceMap!./style.scss");
 				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
 				update(newContent);
 			});
@@ -604,11 +604,11 @@
 	
 	
 	// module
-	exports.push([module.id, ".operationTable___3ENuL {\n  border-collapse: collapse;\n  border: none;\n  overflow: scroll;\n}\n\n.operationTable___3ENuL th {\n  padding: 0.5rem;\n}\n\n.operationTable___3ENuL td:nth-child(3), td:nth-child(4), th:nth-child(3), th:nth-child(4) {\n  text-align: center;\n  padding-left: 1rem;\n  background-color: #F6F6F6;\n}\n", "", {"version":3,"sources":["/./studio/studio/style.scss"],"names":[],"mappings":"AAAA;EACE,0BAAyB;EACzB,aAAW;EACX,iBACF;CAAE;;AAEF;EACI,gBACJ;CAAE;;AAEF;EACI,mBAAkB;EAClB,mBAAkB;EAClB,0BACJ;CAAE","file":"style.scss","sourcesContent":[".operationTable {\r\n  border-collapse: collapse;\r\n  border:none;\r\n  overflow: scroll\r\n}\r\n\r\n.operationTable th {\r\n    padding: 0.5rem\r\n}\r\n\r\n.operationTable td:nth-child(3), td:nth-child(4), th:nth-child(3), th:nth-child(4)  {\r\n    text-align: center;    \r\n    padding-left: 1rem;   \r\n    background-color: #F6F6F6\r\n}"],"sourceRoot":"webpack://"}]);
+	exports.push([module.id, ".operationTable___1tTUr {\n  border-collapse: collapse;\n  border: none;\n  overflow: scroll;\n}\n\n.operationTable___1tTUr th {\n  padding: 0.5rem;\n}\n\n.operationTable___1tTUr td:nth-child(3), td:nth-child(4), th:nth-child(3), th:nth-child(4) {\n  text-align: center;\n  padding-left: 1rem;\n  background-color: #F6F6F6;\n}\n", "", {"version":3,"sources":["/./studio/studio/style.scss"],"names":[],"mappings":"AAAA;EACE,0BAA0B;EAC1B,aAAY;EACZ,iBACD;CAAC;;AAEF;EACI,gBACH;CAAC;;AAEF;EACI,mBAAmB;EACnB,mBAAmB;EACnB,0BACH;CAAC","file":"style.scss","sourcesContent":[".operationTable {\r\n  border-collapse: collapse;\r\n  border:none;\r\n  overflow: scroll\r\n}\r\n\r\n.operationTable th {\r\n    padding: 0.5rem\r\n}\r\n\r\n.operationTable td:nth-child(3), td:nth-child(4), th:nth-child(3), th:nth-child(4)  {\r\n    text-align: center;    \r\n    padding-left: 1rem;   \r\n    background-color: #F6F6F6\r\n}"],"sourceRoot":"webpack://"}]);
 	
 	// exports
 	exports.locals = {
-		"operationTable": "operationTable___3ENuL"
+		"operationTable": "operationTable___1tTUr"
 	};
 
 /***/ },
