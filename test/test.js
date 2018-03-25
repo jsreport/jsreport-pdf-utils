@@ -6,7 +6,7 @@ describe('pdf utils', () => {
   let jsreport
 
   beforeEach(async () => {
-    jsreport = JsReport({ tasks: { strategy: 'in-process' } })
+    jsreport = JsReport({ templatingEngines: { strategy: 'in-process' } })
     jsreport.use(require('jsreport-templates')())
     jsreport.use(require('jsreport-chrome-pdf')({
       launchOptions: {
