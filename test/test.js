@@ -51,7 +51,7 @@ describe('pdf utils', () => {
     parsedPdf.pages[0].text.includes('header').should.be.ok()
   })
 
-  it('merge with renderForEveryPage flag should provide dynamic pageNumber for evrey page', async () => {
+  it('merge with renderForEveryPage flag should provide dynamic pageNumber for every page', async () => {
     await jsreport.documentStore.collection('templates').insert({
       content: '{{$pdf.pageNumber}}/{{$pdf.pages.length}}',
       shortid: 'header',
@@ -281,6 +281,26 @@ describe('pdf utils', () => {
     parsedPdf.pages[0].text.includes('Foo').should.be.ok()
   })
 
+  it('merge with inline template definition', async () => {
+    const result = await jsreport.render({
+      template: {
+        content: 'foo',
+        name: 'content',
+        engine: 'none',
+        recipe: 'chrome-pdf',
+        pdfOperations: [{ type: 'merge', template: { content: 'header', engine: 'none', 'recipe': 'chrome-pdf' } }],
+        chrome: {
+          marginTop: '3cm'
+        }
+      }
+    })
+
+    const parsedPdf = await parsePdf(result.content, true)
+
+    parsedPdf.pages[0].text.includes('foo').should.be.ok()
+    parsedPdf.pages[0].text.includes('header').should.be.ok()
+  })
+
   it('append operation be able to append pages from another template', async () => {
     await jsreport.documentStore.collection('templates').insert({
       content: 'another page',
@@ -308,6 +328,22 @@ describe('pdf utils', () => {
     parsedPdf.pages[1].text.includes('another page').should.be.ok()
   })
 
+  it('append with inline template definition', async () => {
+    const result = await jsreport.render({
+      template: {
+        content: `foo`,
+        engine: 'none',
+        name: 'foo',
+        recipe: 'chrome-pdf',
+        pdfOperations: [{ type: 'append', template: { content: 'bar', engine: 'none', recipe: 'chrome-pdf' } }]
+      }
+    })
+
+    const parsedPdf = await parsePdf(result.content, true)
+    parsedPdf.pages[0].text.includes('foo').should.be.ok()
+    parsedPdf.pages[1].text.includes('bar').should.be.ok()
+  })
+
   it('prepend operation be able to prepend pages from another template', async () => {
     await jsreport.documentStore.collection('templates').insert({
       content: 'another page',
@@ -332,6 +368,22 @@ describe('pdf utils', () => {
 
     const parsedPdf = await parsePdf(result.content, true)
     parsedPdf.pages[0].text.includes('another page').should.be.ok()
+    parsedPdf.pages[1].text.includes('foo').should.be.ok()
+  })
+
+  it('prepend with inline template definition', async () => {
+    const result = await jsreport.render({
+      template: {
+        content: `foo`,
+        name: 'foo',
+        engine: 'none',
+        recipe: 'chrome-pdf',
+        pdfOperations: [{ type: 'prepend', template: { content: 'bar', engine: 'none', recipe: 'chrome-pdf', chrome: { landscape: true } } }]
+      }
+    })
+
+    const parsedPdf = await parsePdf(result.content, true)
+    parsedPdf.pages[0].text.includes('bar').should.be.ok()
     parsedPdf.pages[1].text.includes('foo').should.be.ok()
   })
 
