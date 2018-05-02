@@ -87,7 +87,7 @@ describe('pdf utils', () => {
 
     const result = await jsreport.render({
       template: {
-        content: `{{{pdfCreatePagesGroup "Some Text"}}}`,
+        content: `{{{pdfCreatePagesGroup "SomeText"}}}`,
         engine: 'handlebars',
         name: 'content',
         recipe: 'chrome-pdf',
@@ -97,8 +97,8 @@ describe('pdf utils', () => {
 
     const parsedPdf = await parsePdf(result.content, true)
 
-    parsedPdf.pages[0].group.should.be.eql('Some Text')
-    parsedPdf.pages[0].text.includes('Some Text').should.be.true()
+    parsedPdf.pages[0].group.should.be.eql('SomeText')
+    parsedPdf.pages[0].text.includes('SomeText').should.be.true()
   })
 
   it('merge with renderForEveryPage should be able to group multiple pages using single pdfCreatePagesGroup helper', async () => {
@@ -303,7 +303,7 @@ describe('pdf utils', () => {
 
   it('append operation be able to append pages from another template', async () => {
     await jsreport.documentStore.collection('templates').insert({
-      content: 'another page',
+      content: 'anotherpage',
       shortid: 'anotherPage',
       name: 'anotherPage',
       engine: 'handlebars',
@@ -325,7 +325,7 @@ describe('pdf utils', () => {
 
     const parsedPdf = await parsePdf(result.content, true)
     parsedPdf.pages[0].text.includes('foo').should.be.ok()
-    parsedPdf.pages[1].text.includes('another page').should.be.ok()
+    parsedPdf.pages[1].text.includes('anotherpage').should.be.ok()
   })
 
   it('append with inline template definition', async () => {
@@ -346,7 +346,7 @@ describe('pdf utils', () => {
 
   it('prepend operation be able to prepend pages from another template', async () => {
     await jsreport.documentStore.collection('templates').insert({
-      content: 'another page',
+      content: 'anotherpage',
       shortid: 'anotherPage',
       name: 'anotherPage',
       engine: 'handlebars',
@@ -367,7 +367,7 @@ describe('pdf utils', () => {
     })
 
     const parsedPdf = await parsePdf(result.content, true)
-    parsedPdf.pages[0].text.includes('another page').should.be.ok()
+    parsedPdf.pages[0].text.includes('anotherpage').should.be.ok()
     parsedPdf.pages[1].text.includes('foo').should.be.ok()
   })
 

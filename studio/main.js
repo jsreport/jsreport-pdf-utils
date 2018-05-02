@@ -604,11 +604,11 @@
 	
 	
 	// module
-	exports.push([module.id, ".operationTable___1tTUr {\n  border-collapse: collapse;\n  border: none;\n  overflow: scroll;\n}\n\n.operationTable___1tTUr th {\n  padding: 0.5rem;\n}\n\n.operationTable___1tTUr td:nth-child(3), td:nth-child(4), th:nth-child(3), th:nth-child(4) {\n  text-align: center;\n  padding-left: 1rem;\n  background-color: #F6F6F6;\n}\n", "", {"version":3,"sources":["/./studio/studio/style.scss"],"names":[],"mappings":"AAAA;EACE,0BAA0B;EAC1B,aAAY;EACZ,iBACD;CAAC;;AAEF;EACI,gBACH;CAAC;;AAEF;EACI,mBAAmB;EACnB,mBAAmB;EACnB,0BACH;CAAC","file":"style.scss","sourcesContent":[".operationTable {\r\n  border-collapse: collapse;\r\n  border:none;\r\n  overflow: scroll\r\n}\r\n\r\n.operationTable th {\r\n    padding: 0.5rem\r\n}\r\n\r\n.operationTable td:nth-child(3), td:nth-child(4), th:nth-child(3), th:nth-child(4)  {\r\n    text-align: center;    \r\n    padding-left: 1rem;   \r\n    background-color: #F6F6F6\r\n}"],"sourceRoot":"webpack://"}]);
+	exports.push([module.id, ".operationTable___3ENuL {\n  border-collapse: collapse;\n  border: none;\n  overflow: scroll;\n}\n\n.operationTable___3ENuL th {\n  padding: 0.5rem;\n}\n\n.operationTable___3ENuL td:nth-child(3), td:nth-child(4), th:nth-child(3), th:nth-child(4) {\n  text-align: center;\n  padding-left: 1rem;\n  background-color: #F6F6F6;\n}\n", "", {"version":3,"sources":["/./studio/studio/style.scss"],"names":[],"mappings":"AAAA;EACE,0BAAyB;EACzB,aAAW;EACX,iBACF;CAAE;;AAEF;EACI,gBACJ;CAAE;;AAEF;EACI,mBAAkB;EAClB,mBAAkB;EAClB,0BACJ;CAAE","file":"style.scss","sourcesContent":[".operationTable {\r\n  border-collapse: collapse;\r\n  border:none;\r\n  overflow: scroll\r\n}\r\n\r\n.operationTable th {\r\n    padding: 0.5rem\r\n}\r\n\r\n.operationTable td:nth-child(3), td:nth-child(4), th:nth-child(3), th:nth-child(4)  {\r\n    text-align: center;    \r\n    padding-left: 1rem;   \r\n    background-color: #F6F6F6\r\n}"],"sourceRoot":"webpack://"}]);
 	
 	// exports
 	exports.locals = {
-		"operationTable": "operationTable___1tTUr"
+		"operationTable": "operationTable___3ENuL"
 	};
 
 /***/ },
