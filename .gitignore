@@ -58,5 +58,6 @@ typings/
 .env
 
 data
-studio/main.js
+# temporary exclude
+# studio/main.js
 studio/main.js.map

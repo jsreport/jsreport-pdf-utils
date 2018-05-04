@@ -45,7 +45,9 @@ export default class PdfUtilsEditor extends Component {
         </select>
       </td>
       <td>
-        <select value={operation.type} onChange={(v) => this.updateOperation(entity, index, { type: v.target.value })}>>
+        <select
+          value={operation.type}
+          onChange={(v) => this.updateOperation(entity, index, { type: v.target.value })}>>
           <option value='merge'>merge</option>
           <option value='append'>append</option>
           <option value='prepend'>prepend</option>
