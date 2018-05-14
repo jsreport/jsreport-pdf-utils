@@ -417,4 +417,30 @@ describe('pdf utils', () => {
     const parsedPdf = await parsePdf(result.content, true)
     parsedPdf.pages[0].text.includes('header').should.be.ok()
   })
+
+  it('operations should be skipped when rendering template with non pdf', async () => {
+    await jsreport.documentStore.collection('templates').insert({
+      content: '<div style"height: 2cm">header</div>',
+      shortid: 'header',
+      name: 'header',
+      engine: 'none',
+      chrome: {
+        width: '8cm',
+        height: '8cm'
+      },
+      recipe: 'chrome-pdf'
+    })
+
+    const result = await jsreport.render({
+      template: {
+        content: 'foo',
+        name: 'content',
+        engine: 'none',
+        recipe: 'html',
+        pdfOperations: [{ type: 'merge', templateShortid: 'header' }]
+      }
+    })
+
+    result.content.toString().should.be.eql('foo')
+  })
 })
