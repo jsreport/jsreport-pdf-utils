@@ -443,4 +443,40 @@ describe('pdf utils', () => {
 
     result.content.toString().should.be.eql('foo')
   })
+
+  it('should keep order of logs', async () => {
+    await jsreport.documentStore.collection('templates').insert({
+      content: '<div style"height: 2cm">header</div>',
+      shortid: 'header',
+      name: 'header',
+      engine: 'none',
+      chrome: {
+        width: '8cm',
+        height: '8cm'
+      },
+      recipe: 'chrome-pdf'
+    })
+
+    const result = await jsreport.render({
+      template: {
+        content: 'foo',
+        name: 'content',
+        engine: 'none',
+        recipe: 'chrome-pdf',
+        pdfOperations: [{ type: 'merge', templateShortid: 'header' }],
+        chrome: {
+          marginTop: '3cm'
+        }
+      }
+    })
+
+    const logs = result.meta.logs.map(m => m.message)
+    const startingLogIndex = logs.indexOf('pdf-utils is starting pdf processing')
+
+    startingLogIndex.should.be.not.eql(-1)
+
+    const nextLog = logs[startingLogIndex + 1]
+
+    nextLog.should.be.eql('Detected 1 pdf operation(s) to process')
+  })
 })
