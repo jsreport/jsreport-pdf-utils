@@ -479,4 +479,39 @@ describe('pdf utils', () => {
 
     nextLog.should.be.eql('Detected 1 pdf operation(s) to process')
   })
+
+  it('merge with renderForEveryPage should be able to use groups on previously appended report', async () => {
+    await jsreport.documentStore.collection('templates').insert({
+      content: '{{#with (lookup $pdf.pages $pdf.pageIndex)}}{{group}}{{/with}}',
+      shortid: 'header',
+      name: 'header',
+      engine: 'handlebars',
+      recipe: 'chrome-pdf'
+    })
+
+    await jsreport.documentStore.collection('templates').insert({
+      content: `{{{pdfCreatePagesGroup "Appended"}}}`,
+      shortid: 'append',
+      name: 'append',
+      engine: 'handlebars',
+      recipe: 'chrome-pdf'
+    })
+
+    const result = await jsreport.render({
+      template: {
+        content: `{{{pdfCreatePagesGroup "Main"}}}`,
+        engine: 'handlebars',
+        recipe: 'chrome-pdf',
+        pdfOperations: [ { type: 'append', templateShortid: 'append' },
+          { type: 'merge', renderForEveryPage: true, templateShortid: 'header' }]
+      }
+    })
+
+    const parsedPdf = await parsePdf(result.content, true)
+
+    parsedPdf.pages[0].group.should.be.eql('Main')
+    parsedPdf.pages[0].text.includes('Main').should.be.ok()
+    parsedPdf.pages[1].group.should.be.eql('Appended')
+    parsedPdf.pages[1].text.includes('Appended').should.be.ok()
+  })
 })
