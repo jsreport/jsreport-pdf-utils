@@ -60,13 +60,13 @@ export default class PdfUtilsEditor extends Component {
         <input type='checkbox' disabled={operation.type !== 'merge'} checked={operation.renderForEveryPage === true} onChange={(v) => this.updateOperation(entity, index, { renderForEveryPage: v.target.checked })} />
       </td>
       <td>
-        <button className='button' style={{backgroundColor: '#c6c6c6'}} onClick={() => this.removeOperation(entity, index)}><i className='fa fa-times' /></button>
+        <button className='button' style={{ backgroundColor: '#c6c6c6' }} onClick={() => this.removeOperation(entity, index)}><i className='fa fa-times' /></button>
       </td>
       <td>
-        {entity.pdfOperations[index - 1] ? <button className='button' style={{backgroundColor: '#c6c6c6'}} onClick={() => this.moveUp(entity, index)}><i className='fa fa-arrow-up' /></button> : ''}
+        {entity.pdfOperations[index - 1] ? <button className='button' style={{ backgroundColor: '#c6c6c6' }} onClick={() => this.moveUp(entity, index)}><i className='fa fa-arrow-up' /></button> : ''}
       </td>
       <td>
-        {entity.pdfOperations[index + 1] ? <button className='button' style={{backgroundColor: '#c6c6c6'}} onClick={() => this.moveDown(entity, index)}><i className='fa fa-arrow-down' /></button> : ''}
+        {entity.pdfOperations[index + 1] ? <button className='button' style={{ backgroundColor: '#c6c6c6' }} onClick={() => this.moveDown(entity, index)}><i className='fa fa-arrow-down' /></button> : ''}
       </td>
     </tr>)
   }
@@ -93,17 +93,17 @@ export default class PdfUtilsEditor extends Component {
   render () {
     const { entity } = this.props
 
-    return (<div className='block custom-editor' style={{overflowX: 'auto'}}>
+    return (<div className='block custom-editor' style={{ overflowX: 'auto' }}>
       <h1><i className='fa fa-file-pdf-o' /> pdf operations
       </h1>
-      <p style={{marginTop: '1rem'}}>
+      <p style={{ marginTop: '1rem' }}>
         Use merge/append operations to add dynamic headers or concatenate multiple pdf reports into one.
         See more docs and examples <a href='https://jsreport.net/learn/pdf-utils'>here</a>.
       </p>
-      <div style={{marginTop: '1rem'}}>
+      <div style={{ marginTop: '1rem' }}>
         {this.renderOperations(entity)}
       </div>
-      <div style={{marginTop: '1rem'}}>
+      <div style={{ marginTop: '1rem' }}>
         <button className='button confirmation' onClick={() => this.addOperation(entity)}>Add operation</button>
       </div>
     </div>)
