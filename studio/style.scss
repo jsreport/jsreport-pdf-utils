@@ -8,7 +8,12 @@
     padding: 0.5rem
 }
 
-.operationTable td:nth-child(3), .operationTable td:nth-child(4), .operationTable th:nth-child(3), .operationTable th:nth-child(4)  {
+.operationTable td:nth-child(3), 
+.operationTable td:nth-child(4), 
+.operationTable td:nth-child(5), 
+.operationTable th:nth-child(3), 
+.operationTable th:nth-child(4),
+.operationTable th:nth-child(5)  {
     text-align: center;    
     padding-left: 1rem;   
     background-color: #F6F6F6

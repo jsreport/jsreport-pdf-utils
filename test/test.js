@@ -546,7 +546,7 @@ describe('pdf utils', () => {
     parsedPdf.pages.should.have.length(2)
   })
 
-  it('merge-document should merge whole documents', async () => {
+  it('merge should merge whole documents when mergeWholeDocument', async () => {
     const result = await jsreport.render({
       template: {
         content: `main1<div style='page-break-before: always;'></div>main2`,
@@ -554,7 +554,8 @@ describe('pdf utils', () => {
         engine: 'none',
         recipe: 'chrome-pdf',
         pdfOperations: [{
-          type: 'merge-document',
+          type: 'merge',
+          mergeWholeDocument: true,
           template: {
             content: `{{#each $pdf.pages}}
             <div>header</div>
