@@ -51,10 +51,11 @@ export default class PdfUtilsEditor extends Component {
           <option value='merge'>merge</option>
           <option value='append'>append</option>
           <option value='prepend'>prepend</option>
+          <option value='merge-document'>merge-document</option>
         </select>
       </td>
       <td>
-        <input type='checkbox' disabled={operation.type !== 'merge'} checked={operation.mergeToFront === true} onChange={(v) => this.updateOperation(entity, index, { mergeToFront: v.target.checked })} />
+        <input type='checkbox' disabled={operation.type !== 'merge' && operation.type !== 'merge-document'} checked={operation.mergeToFront === true} onChange={(v) => this.updateOperation(entity, index, { mergeToFront: v.target.checked })} />
       </td>
       <td>
         <input type='checkbox' disabled={operation.type !== 'merge'} checked={operation.renderForEveryPage === true} onChange={(v) => this.updateOperation(entity, index, { renderForEveryPage: v.target.checked })} />

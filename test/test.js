@@ -545,6 +545,33 @@ describe('pdf utils', () => {
     const parsedPdf = await parsePdf(result.content, true)
     parsedPdf.pages.should.have.length(2)
   })
+
+  it('merge-document should merge whole documents', async () => {
+    const result = await jsreport.render({
+      template: {
+        content: `main1<div style='page-break-before: always;'></div>main2`,
+        name: 'content',
+        engine: 'none',
+        recipe: 'chrome-pdf',
+        pdfOperations: [{
+          type: 'merge-document',
+          template: {
+            content: `{{#each $pdf.pages}}
+            <div>header</div>
+            <div style='page-break-before: always;'></div>
+          {{/each}}`,
+            engine: 'handlebars',
+            recipe: 'chrome-pdf'
+          }
+        }]
+      }
+    })
+
+    const parsedPdf = await parsePdf(result.content, true)
+    parsedPdf.pages.should.have.length(2)
+    parsedPdf.pages[0].text.includes('header').should.be.ok()
+    parsedPdf.pages[1].text.includes('header').should.be.ok()
+  })
 })
 
 describe('pdf utils with http-server templating strategy', () => {
