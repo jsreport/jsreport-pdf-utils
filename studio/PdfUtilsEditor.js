@@ -57,10 +57,10 @@ export default class PdfUtilsEditor extends Component {
         <input type='checkbox' disabled={operation.type !== 'merge'} checked={operation.mergeToFront === true} onChange={(v) => this.updateOperation(entity, index, { mergeToFront: v.target.checked })} />
       </td>
       <td>
-        <input type='checkbox' disabled={operation.type !== 'merge'} checked={operation.renderForEveryPage === true} onChange={(v) => this.updateOperation(entity, index, { renderForEveryPage: v.target.checked })} />
+        <input type='checkbox' disabled={operation.type !== 'merge' || operation.mergeWholeDocument} checked={operation.renderForEveryPage === true} onChange={(v) => this.updateOperation(entity, index, { renderForEveryPage: v.target.checked, mergeWholeDocument: false })} />
       </td>
       <td>
-        <input type='checkbox' disabled={operation.type !== 'merge'} checked={operation.mergeWholeDocument === true} onChange={(v) => this.updateOperation(entity, index, { mergeWholeDocument: v.target.checked })} />
+        <input type='checkbox' disabled={operation.type !== 'merge' || operation.renderForEveryPage} checked={operation.mergeWholeDocument === true} onChange={(v) => this.updateOperation(entity, index, { mergeWholeDocument: v.target.checked, renderForEveryPage: false })} />
       </td>
       <td>
         <button className='button' style={{ backgroundColor: '#c6c6c6' }} onClick={() => this.removeOperation(entity, index)}><i className='fa fa-times' /></button>
