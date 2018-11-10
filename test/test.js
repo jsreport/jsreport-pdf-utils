@@ -12,6 +12,7 @@ function initialize (strategy = 'in-process') {
       args: ['--no-sandbox']
     }
   }))
+  jsreport.use(require('jsreport-phantom-pdf')())
   jsreport.use(require('jsreport-handlebars')())
   jsreport.use(require('jsreport-jsrender')())
   jsreport.use(require('../')())
@@ -626,6 +627,34 @@ describe('pdf utils', () => {
     parsedPdf.pages.should.have.length(2)
     parsedPdf.pages[0].text.includes('header').should.be.ok()
     parsedPdf.pages[1].text.includes('header').should.be.ok()
+  })
+
+  it('should be able to merge watermark into pdf with native header produced by phantomjs', async () => {
+    const result = await jsreport.render({
+      template: {
+        content: `main`,
+        name: 'content',
+        engine: 'none',
+        recipe: 'phantom-pdf',
+        phantom: {
+          header: 'header'
+        },
+        pdfOperations: [{
+          type: 'merge',
+          mergeWholeDocument: true,
+          template: {
+            content: `watermark`,
+            engine: 'handlebars',
+            recipe: 'phantom-pdf'
+          }
+        }]
+      }
+    })
+
+    const parsedPdf = await parsePdf(result.content, true)
+    parsedPdf.pages.should.have.length(1)
+    parsedPdf.pages[0].text.includes('header').should.be.ok()
+    parsedPdf.pages[0].text.includes('watermark').should.be.ok()
   })
 })
 

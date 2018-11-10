@@ -45,6 +45,7 @@
     "jsreport-core": "2.2.0",
     "jsreport-handlebars": "2.0.0",
     "jsreport-jsrender": "2.0.0",
+    "jsreport-phantom-pdf": "2.1.3",
     "jsreport-studio-dev": "1.3.0",
     "jsreport-templates": "2.0.0",
     "mocha": "5.2.0",
