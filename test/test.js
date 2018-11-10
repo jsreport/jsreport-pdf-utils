@@ -546,6 +546,60 @@ describe('pdf utils', () => {
     parsedPdf.pages.should.have.length(2)
   })
 
+  it('should be able to merge none jsreport produced pdf', async () => {
+    jsreport.afterRenderListeners.insert(0, 'test', (req, res) => {
+      if (req.template.content === 'replace') {
+        res.content = fs.readFileSync(path.join(__dirname, 'pdf-sample.pdf'))
+      }
+    })
+
+    const result = await jsreport.render({
+      template: {
+        content: 'main',
+        engine: 'none',
+        recipe: 'chrome-pdf',
+        pdfOperations: [{
+          type: 'merge',
+          template: {
+            content: 'replace',
+            engine: 'none',
+            recipe: 'chrome-pdf'
+          }
+        }]
+      }
+    })
+
+    const parsedPdf = await parsePdf(result.content, true)
+    parsedPdf.pages.should.have.length(1)
+  })
+
+  it('should be able to merge none jsreport produced pdf with multiple xobjs', async () => {
+    jsreport.afterRenderListeners.insert(0, 'test', (req, res) => {
+      if (req.template.content === 'replace') {
+        res.content = fs.readFileSync(path.join(__dirname, 'multiple-embedded-xobj.pdf'))
+      }
+    })
+
+    const result = await jsreport.render({
+      template: {
+        content: 'main',
+        engine: 'none',
+        recipe: 'chrome-pdf',
+        pdfOperations: [{
+          type: 'merge',
+          template: {
+            content: 'replace',
+            engine: 'none',
+            recipe: 'chrome-pdf'
+          }
+        }]
+      }
+    })
+
+    const parsedPdf = await parsePdf(result.content, true)
+    parsedPdf.pages.should.have.length(1)
+  })
+
   it('merge should merge whole documents when mergeWholeDocument', async () => {
     const result = await jsreport.render({
       template: {
