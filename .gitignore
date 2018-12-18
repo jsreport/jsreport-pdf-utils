@@ -57,6 +57,11 @@ typings/
 # dotenv environment variables file
 .env
 
+# configuration files
+dev.config.json
+prod.config.json
+jsreport.config.json
+
 data
 
 studio/main.js
