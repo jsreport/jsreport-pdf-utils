@@ -656,6 +656,42 @@ describe('pdf utils', () => {
     parsedPdf.pages[0].text.includes('header').should.be.ok()
     parsedPdf.pages[0].text.includes('watermark').should.be.ok()
   })
+
+  // so far not supported
+  it.skip('should work with appending weasyprint pdf twice', async () => {
+    jsreport.afterRenderListeners.insert(0, 'test', (req, res) => {
+      if (req.template.content === 'weasyprint') {
+        res.content = fs.readFileSync(path.join(__dirname, 'weasyprint.pdf'))
+      }
+    })
+
+    const result = await jsreport.render({
+      template: {
+        content: `main`,
+        name: 'content',
+        engine: 'none',
+        recipe: 'chrome-pdf',
+        pdfOperations: [{
+          type: 'append',
+          template: {
+            content: `weasyprint`,
+            engine: 'handlebars',
+            recipe: 'html'
+          }
+        }, {
+          type: 'append',
+          template: {
+            content: `weasyprint`,
+            engine: 'handlebars',
+            recipe: 'html'
+          }
+        }]
+      }
+    })
+
+    const parsedPdf = await parsePdf(result.content, true)
+    parsedPdf.pages.should.have.length(3)
+  })
 })
 
 describe('pdf utils with http-server templating strategy', () => {
