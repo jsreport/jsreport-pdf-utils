@@ -692,7 +692,35 @@ describe('pdf utils', () => {
     const parsedPdf = await parsePdf(result.content, true)
     parsedPdf.pages.should.have.length(3)
   })
-})
+
+  it('should work with merging word generated pdf and dont loose special characters', async () => {
+    jsreport.afterRenderListeners.insert(0, 'test', (req, res) => {
+      if (req.template.content === 'word') {
+        res.content = fs.readFileSync(path.join(__dirname, 'word.pdf'))
+      }
+    })
+
+    const result = await jsreport.render({
+      template: {
+        content: `main`,
+        name: 'content',
+        engine: 'none',
+        recipe: 'chrome-pdf',
+        pdfOperations: [{
+          type: 'merge',
+          template: {
+            content: `word`,
+            engine: 'none',
+            recipe: 'html'
+          }
+        }]
+      }
+    })
+
+    const parsedPdf = await parsePdf(result.content, true)
+    parsedPdf.pages.should.have.length(1)
+    parsedPdf.pages[0].text.should.containEql('dénommé')
+  })
 
 describe('pdf utils with http-server templating strategy', () => {
   let jsreport
