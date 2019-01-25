@@ -722,6 +722,41 @@ describe('pdf utils', () => {
     parsedPdf.pages[0].text.should.containEql('dénommé')
   })
 
+  it('should not break pdf href links when doing append', async () => {
+    const result = await jsreport.render({
+      template: {
+        content: `<a href='#foo'>foo</a><h1 id='foo'>hello</h1>`,
+        name: 'content',
+        engine: 'none',
+        recipe: 'chrome-pdf',
+        pdfOperations: [{
+          type: 'append',
+          template: {
+            content: `hello`,
+            engine: 'none',
+            recipe: 'chrome-pdf'
+          }
+        }]
+      }
+    })
+
+    result.content.toString().should.containEql('/Dests')
+  })
+
+  it('should be able to add outlines', async () => {
+    const result = await jsreport.render({
+      template: {
+        content: ` <a href='#foo' data-pdf-utils-outline data-pdf-utils-outline-text='foo'>foo</a><h1 id='foo'>hello</h1>`,
+        name: 'content',
+        engine: 'none',
+        recipe: 'chrome-pdf'
+      }
+    })
+
+    result.content.toString().should.containEql('/Outlines')
+  })
+})
+
 describe('pdf utils with http-server templating strategy', () => {
   let jsreport
   beforeEach(async () => (jsreport = await initialize('http-server')))
