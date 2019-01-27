@@ -54,8 +54,8 @@
     "standard": "12.0.1"
   },
   "dependencies": {
-    "jsreport-pdfjs": "jsreport/pdfjs",
     "cheerio": "0.22.0",
+    "jsreport-pdfjs": "github:jsreport/pdfjs",
     "pdfjs-dist": "2.0.489"
   },
   "files": [
