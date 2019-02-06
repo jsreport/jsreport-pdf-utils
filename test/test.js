@@ -106,6 +106,31 @@ describe('pdf utils', () => {
     parsedPdf.pages[0].text.includes('SomeText').should.be.true()
   })
 
+  it('merge with renderForEveryPage should be able to use pdfCreatePagesGroup helper and mark the last group on the same page', async () => {
+    await jsreport.documentStore.collection('templates').insert({
+      content: '{{#with (lookup $pdf.pages $pdf.pageIndex)}}{{group}}{{/with}}',
+      shortid: 'header',
+      name: 'header',
+      engine: 'handlebars',
+      recipe: 'chrome-pdf'
+    })
+
+    const result = await jsreport.render({
+      template: {
+        content: `{{{pdfCreatePagesGroup "SomeText"}}}{{{pdfCreatePagesGroup "Different"}}}`,
+        engine: 'handlebars',
+        name: 'content',
+        recipe: 'chrome-pdf',
+        pdfOperations: [{ type: 'merge', renderForEveryPage: true, templateShortid: 'header' }]
+      }
+    })
+
+    const parsedPdf = await parsePdf(result.content, true)
+
+    parsedPdf.pages[0].group.should.be.eql('Different')
+    parsedPdf.pages[0].text.includes('Different').should.be.true()
+  })
+
   it('merge with renderForEveryPage should be able to group multiple pages using single pdfCreatePagesGroup helper', async () => {
     await jsreport.documentStore.collection('templates').insert({
       content: '{{#with (lookup $pdf.pages $pdf.pageIndex)}}{{group}}{{/with}}',
