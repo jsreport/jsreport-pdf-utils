@@ -771,7 +771,7 @@ describe('pdf utils', () => {
   it('should be able to add outlines', async () => {
     const result = await jsreport.render({
       template: {
-        content: ` <a href='#foo' data-pdf-utils-outline data-pdf-utils-outline-text='foo'>foo</a><h1 id='foo'>hello</h1>`,
+        content: ` <a href='#foo' data-pdf-outline data-pdf-outline-text='foo'>foo</a><h1 id='foo'>hello</h1>`,
         name: 'content',
         engine: 'none',
         recipe: 'chrome-pdf'
