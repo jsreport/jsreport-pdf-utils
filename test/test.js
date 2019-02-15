@@ -22,7 +22,7 @@ function initialize (strategy = 'in-process') {
 describe('pdf utils', () => {
   let jsreport
   beforeEach(async () => (jsreport = await initialize()))
-  afterEach(() => jsreport.close())
+  afterEach(() => jsreport && jsreport.close())
 
   it('merge should embed static text', async () => {
     await jsreport.documentStore.collection('templates').insert({
