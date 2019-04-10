@@ -768,6 +768,43 @@ describe('pdf utils', () => {
     result.content.toString().should.containEql('/Dests')
   })
 
+  it('should not be affected by parent text-transform', async () => {
+    const result = await jsreport.render({
+      template: {
+        content: `
+          <div style="text-transform: uppercase">
+            content
+            {{{pdfAddPageItem text="testing text"}}}
+          </div>
+        `,
+        name: 'content',
+        engine: 'handlebars',
+        recipe: 'chrome-pdf',
+        pdfOperations: [{
+          type: 'append',
+          template: {
+            content: `
+              {{getItemContent $pdf.pages}}
+            `,
+            helpers: `
+              function getItemContent (pages) {
+                console.log(pages)
+                return 'some'
+              }
+            `,
+            engine: 'handlebars',
+            recipe: 'chrome-pdf'
+          }
+        }]
+      }
+    })
+
+    const parsedPdf = await parsePdf(result.content, true)
+    parsedPdf.pages.should.have.length(2)
+    parsedPdf.pages[0].items.length.should.be.eql(1)
+    parsedPdf.pages[0].items[0].text.should.be.eql('testing text')
+  })
+
   it('should be able to add outlines', async () => {
     const result = await jsreport.render({
       template: {
