@@ -142,7 +142,7 @@ describe('pdf utils', () => {
 
     const result = await jsreport.render({
       template: {
-        content: `{{{pdfCreatePagesGroup "1"}}}<div style='page-break-before: always'>hello</div>`,
+        content: `<span>test</span>{{{pdfCreatePagesGroup "1"}}}<div style='page-break-before: always'>hello</div>`,
         engine: 'handlebars',
         name: 'content',
         recipe: 'chrome-pdf',
