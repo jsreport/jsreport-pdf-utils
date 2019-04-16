@@ -510,6 +510,37 @@ describe('pdf utils', () => {
     nextLog.should.be.eql('Detected 1 pdf operation(s) to process')
   })
 
+  it('should be able to ignore disabled operations', async () => {
+    const result = await jsreport.render({
+      template: {
+        content: `
+          world
+        `,
+        name: 'content',
+        engine: 'none',
+        recipe: 'chrome-pdf',
+        chrome: {
+          marginTop: '2cm'
+        },
+        pdfOperations: [{
+          type: 'merge',
+          template: {
+            content: `
+              hello
+            `,
+            engine: 'none',
+            recipe: 'chrome-pdf'
+          },
+          enabled: false
+        }]
+      }
+    })
+
+    const parsedPdf = await parsePdf(result.content, true)
+    parsedPdf.pages.should.have.length(1)
+    parsedPdf.pages[0].text.should.be.eql('world')
+  })
+
   it('merge with renderForEveryPage should be able to use groups on previously appended report', async () => {
     await jsreport.documentStore.collection('templates').insert({
       content: '{{#with (lookup $pdf.pages $pdf.pageIndex)}}{{group}}{{/with}}',

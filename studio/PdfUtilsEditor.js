@@ -66,6 +66,9 @@ export default class PdfUtilsEditor extends Component {
           <input type='checkbox' disabled={operation.type !== 'merge' || operation.renderForEveryPage} checked={operation.mergeWholeDocument === true} onChange={(v) => this.updateOperation(entity, index, { mergeWholeDocument: v.target.checked, renderForEveryPage: false })} />
         </td>
         <td>
+          <input type='checkbox' checked={operation.enabled !== false} onChange={(v) => this.updateOperation(entity, index, { enabled: v.target.checked })} />
+        </td>
+        <td>
           <button className='button' style={{ backgroundColor: '#c6c6c6' }} onClick={() => this.removeOperation(entity, index)}><i className='fa fa-times' /></button>
         </td>
         <td>
@@ -87,6 +90,7 @@ export default class PdfUtilsEditor extends Component {
           <th>Merge to front</th>
           <th>Render for every page</th>
           <th>Merge whole document</th>
+          <th>Enabled</th>
           <th />
           <th />
           <th />
