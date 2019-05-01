@@ -15,6 +15,7 @@ function initialize (strategy = 'in-process') {
   jsreport.use(require('jsreport-phantom-pdf')())
   jsreport.use(require('jsreport-handlebars')())
   jsreport.use(require('jsreport-jsrender')())
+  jsreport.use(require('jsreport-scripts')())
   jsreport.use(require('../')())
   return jsreport.init()
 }
@@ -847,6 +848,198 @@ describe('pdf utils', () => {
     })
 
     result.content.toString().should.containEql('/Outlines')
+  })
+
+  it('should expose jsreport-proxy pdfUtils (.parse)', async () => {
+    const result = await jsreport.render({
+      template: {
+        content: 'empty',
+        engine: 'none',
+        recipe: 'html',
+        scripts: [{
+          content: `
+            const jsreport = require('jsreport-proxy')
+
+            async function afterRender (req, res) {
+              const renderRes = await jsreport.render({
+                template: {
+                  content: 'foo',
+                  engine: 'none',
+                  recipe: 'chrome-pdf'
+                }
+              })
+
+              const $pdf = await jsreport.pdfUtils.parse(renderRes.content, true)
+
+              res.content = JSON.stringify($pdf)
+            }
+          `
+        }]
+      }
+    })
+
+    const $pdf = JSON.parse(result.content.toString())
+
+    $pdf.pages.should.have.length(1)
+    $pdf.pages[0].text.should.be.eql('foo')
+  })
+
+  it('should expose jsreport-proxy pdfUtils (.prepend)', async () => {
+    const result = await jsreport.render({
+      template: {
+        content: 'First page',
+        engine: 'none',
+        recipe: 'chrome-pdf',
+        scripts: [{
+          content: `
+            const jsreport = require('jsreport-proxy')
+
+            async function afterRender (req, res) {
+              const newRender = await jsreport.render({
+                template: {
+                  content: 'Cover page',
+                  engine: 'none',
+                  recipe: 'chrome-pdf'
+                }
+              })
+
+              res.content = await jsreport.pdfUtils.prepend(res.content, newRender.content)
+            }
+          `
+        }]
+      }
+    })
+
+    const parsedPdf = await parsePdf(result.content, true)
+
+    parsedPdf.pages.should.have.length(2)
+    parsedPdf.pages[0].text.includes('Cover').should.be.ok()
+    parsedPdf.pages[1].text.includes('First').should.be.ok()
+  })
+
+  it('should expose jsreport-proxy pdfUtils (.append)', async () => {
+    const result = await jsreport.render({
+      template: {
+        content: 'First page',
+        engine: 'none',
+        recipe: 'chrome-pdf',
+        scripts: [{
+          content: `
+            const jsreport = require('jsreport-proxy')
+
+            async function afterRender (req, res) {
+              const newRender = await jsreport.render({
+                template: {
+                  content: 'Second page',
+                  engine: 'none',
+                  recipe: 'chrome-pdf'
+                }
+              })
+
+              res.content = await jsreport.pdfUtils.append(res.content, newRender.content)
+            }
+          `
+        }]
+      }
+    })
+
+    const parsedPdf = await parsePdf(result.content, true)
+
+    parsedPdf.pages.should.have.length(2)
+    parsedPdf.pages[0].text.includes('First').should.be.ok()
+    parsedPdf.pages[1].text.includes('Second').should.be.ok()
+  })
+
+  it('should expose jsreport-proxy pdfUtils (.merge)', async () => {
+    const result = await jsreport.render({
+      template: {
+        content: 'First page',
+        engine: 'none',
+        recipe: 'chrome-pdf',
+        scripts: [{
+          content: `
+            const jsreport = require('jsreport-proxy')
+
+            async function afterRender (req, res) {
+              const newRender = await jsreport.render({
+                template: {
+                  content: '<div style="margin-top: 100px">Extra content</div>',
+                  engine: 'none',
+                  recipe: 'chrome-pdf'
+                }
+              })
+
+              res.content = await jsreport.pdfUtils.merge(res.content, newRender.content)
+            }
+          `
+        }]
+      }
+    })
+
+    const parsedPdf = await parsePdf(result.content, true)
+
+    parsedPdf.pages.should.have.length(1)
+    parsedPdf.pages[0].text.includes('First').should.be.ok()
+    parsedPdf.pages[0].text.includes('Extra').should.be.ok()
+  })
+
+  it('should expose jsreport-proxy pdfUtils (.outlines)', async () => {
+    const result = await jsreport.render({
+      template: {
+        content: `
+          <div>
+            TOC
+            <ul>
+              <li>
+                <a href='#first-section'>
+                  First
+                </a>
+              </li>
+              <li>
+                <a href='#second-section'>
+                  Second
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div style='page-break-before: always;'></div>
+          <div style="height: 200px">
+            <h1 id="first-section">First section</h1>
+            <span>content</span>
+          </div>
+          <div style="height: 200px">
+            <h1 id="second-section">Second section</h1>
+            <span>content</span>
+          </div>
+        `,
+        engine: 'none',
+        recipe: 'chrome-pdf',
+        scripts: [{
+          content: `
+            const jsreport = require('jsreport-proxy')
+
+            async function afterRender (req, res) {
+              res.content = await jsreport.pdfUtils.outlines(res.content, [{
+                id: 'first-section',
+                title: 'First section',
+                parent: null
+              }, {
+                id: 'second-section',
+                title: 'Second section',
+                parent: null
+              }])
+            }
+          `
+        }]
+      }
+    })
+
+    const parsedPdf = await parsePdf(result.content, true)
+
+    result.content.toString().should.containEql('/Outlines')
+    parsedPdf.pages.should.have.length(2)
+    parsedPdf.pages[1].text.includes('First').should.be.ok()
+    parsedPdf.pages[1].text.includes('Second').should.be.ok()
   })
 })
 
