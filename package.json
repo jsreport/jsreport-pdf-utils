@@ -44,7 +44,7 @@
     "jsreport-core": "2.5.0",
     "jsreport-handlebars": "2.0.2",
     "jsreport-jsrender": "2.0.0",
-    "jsreport-phantom-pdf": "2.2.0",
+    "jsreport-phantom-pdf": "2.3.0",
     "jsreport-scripts": "2.1.0",
     "jsreport-studio-dev": "1.4.0",
     "jsreport-templates": "2.2.0",
@@ -56,7 +56,7 @@
   },
   "dependencies": {
     "cheerio": "0.22.0",
-    "jsreport-pdfjs": "0.4.1",
+    "jsreport-pdfjs": "0.4.3",
     "pdfjs-dist": "2.0.489"
   },
   "files": [
