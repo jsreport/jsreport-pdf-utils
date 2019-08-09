@@ -206,6 +206,35 @@ describe('pdf utils', () => {
     parsedPdf.pages[0].text.includes('number').should.be.ok()
   })
 
+  it('should work with helpers in an object', async () => {
+    await jsreport.documentStore.collection('templates').insert({
+      content: '{{test 1}}',
+      shortid: 'header',
+      name: 'header',
+      engine: 'handlebars',
+      recipe: 'chrome-pdf',
+      helpers: {
+        test: v => typeof v
+      }
+    })
+
+    const result = await jsreport.render({
+      template: {
+        content: `{{{pdfCreatePagesGroup num}}}`,
+        engine: 'handlebars',
+        name: 'content',
+        recipe: 'chrome-pdf',
+        pdfOperations: [{ type: 'merge', renderForEveryPage: true, templateShortid: 'header' }]
+      },
+      data: {
+        num: 1
+      }
+    })
+
+    const parsedPdf = await parsePdf(result.content, true)
+    parsedPdf.pages[0].text.includes('number').should.be.ok()
+  })
+
   it('merge with renderForEveryPage should be able to use pdfCreatePagesGroup helper with hash params with jsrender', async () => {
     await jsreport.documentStore.collection('templates').insert({
       content: '{{:$pdf.pages[$pdf.pageIndex].group.foo}}',
