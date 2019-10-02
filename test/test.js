@@ -16,6 +16,7 @@ function initialize (strategy = 'in-process') {
   jsreport.use(require('jsreport-handlebars')())
   jsreport.use(require('jsreport-jsrender')())
   jsreport.use(require('jsreport-scripts')())
+  jsreport.use(require('jsreport-child-templates')())
   jsreport.use(require('../')())
   return jsreport.init()
 }
@@ -870,6 +871,25 @@ describe('pdf utils', () => {
     const result = await jsreport.render({
       template: {
         content: ` <a href='#foo' data-pdf-outline data-pdf-outline-text='foo'>foo</a><h1 id='foo'>hello</h1>`,
+        name: 'content',
+        engine: 'none',
+        recipe: 'chrome-pdf'
+      }
+    })
+
+    result.content.toString().should.containEql('/Outlines')
+  })
+
+  it('should be able to add outlines through child template', async () => {
+    await jsreport.documentStore.collection('templates').insert({
+      content: `<a href="#child" id="child" data-pdf-outline data-pdf-outline-parent="root">Child</a>`,
+      name: 'child',
+      engine: 'none',
+      recipe: 'html'
+    })
+    const result = await jsreport.render({
+      template: {
+        content: `<a href="#root" id="root" data-pdf-outline>Root</a>{#child child}`,
         name: 'content',
         engine: 'none',
         recipe: 'chrome-pdf'
