@@ -16,8 +16,8 @@ function initialize (strategy = 'in-process') {
   jsreport.use(require('jsreport-handlebars')())
   jsreport.use(require('jsreport-jsrender')())
   jsreport.use(require('jsreport-scripts')())
-  jsreport.use(require('jsreport-child-templates')())
   jsreport.use(require('../')())
+  jsreport.use(require('jsreport-child-templates')())
   return jsreport.init()
 }
 
@@ -742,6 +742,38 @@ describe('pdf utils', () => {
     parsedPdf.pages.should.have.length(1)
     parsedPdf.pages[0].text.includes('header').should.be.ok()
     parsedPdf.pages[0].text.includes('watermark').should.be.ok()
+  })
+
+  it('should add helpers even if there are no pdf utils operations set', async () => {
+    await jsreport.documentStore.collection('templates').insert({
+      content: `
+        Child
+        {{{pdfAddPageItem "child"}}}
+      `,
+      name: 'child',
+      engine: 'handlebars',
+      recipe: 'html'
+    })
+
+    const result = await jsreport.render({
+      template: {
+        content: `
+          Parent
+          {{{pdfAddPageItem "parent"}}}
+          {#child child}
+        `,
+        name: 'content',
+        engine: 'handlebars',
+        recipe: 'chrome-pdf',
+        pdfOperations: []
+      }
+    })
+
+    const parsedPdf = await parsePdf(result.content, true)
+
+    parsedPdf.pages.should.have.length(1)
+    parsedPdf.pages[0].items.includes('parent').should.be.ok()
+    parsedPdf.pages[0].items.includes('child').should.be.ok()
   })
 
   // so far not supported
