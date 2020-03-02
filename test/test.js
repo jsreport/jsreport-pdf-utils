@@ -744,6 +744,35 @@ describe('pdf utils', () => {
     parsedPdf.pages[0].text.includes('watermark').should.be.ok()
   })
 
+  it('should add helpers if recipe is not pdf but there are pdf utils operations set', async () => {
+    await jsreport.documentStore.collection('templates').insert({
+      content: `
+        Child {{{pdfAddPageItem "child"}}}
+      `,
+      name: 'child',
+      engine: 'handlebars',
+      recipe: 'html'
+    })
+
+    const result = await jsreport.render({
+      template: {
+        content: `
+          Parent {{{pdfAddPageItem "parent"}}}
+          {#child child}
+        `,
+        name: 'foo',
+        engine: 'handlebars',
+        recipe: 'html',
+        pdfOperations: [{ type: 'merge', templateShortid: 'header' }]
+      }
+    })
+
+    const resContent = result.content.toString()
+
+    resContent.should.containEql('Parent <span')
+    resContent.should.containEql('Child <span')
+  })
+
   it('should add helpers even if there are no pdf utils operations set', async () => {
     await jsreport.documentStore.collection('templates').insert({
       content: `
