@@ -1151,6 +1151,30 @@ describe('pdf utils', () => {
     parsedPdf.pages[1].text.includes('First').should.be.ok()
     parsedPdf.pages[1].text.includes('Second').should.be.ok()
   })
+
+  it('pdfPassword should encrypt output pdf', async () => {
+    const result = await jsreport.render({
+      template: {
+        content: 'foo',
+        name: 'content',
+        engine: 'none',
+        recipe: 'chrome-pdf',
+        pdfPassword: {
+          password: 'password',
+          printing: 'lowResolution',
+          modifying: true,
+          copying: true,
+          annotating: true,
+          fillingForms: true,
+          contentAccessibility: true,
+          documentAssembly: true
+        }
+      }
+    })
+
+    const parsedPdf = await parsePdf(result.content, true, 'password')
+    parsedPdf.pages[0].text.includes('foo').should.be.ok()
+  })
 })
 
 describe('pdf utils with http-server templating strategy', () => {
