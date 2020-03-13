@@ -1175,6 +1175,33 @@ describe('pdf utils', () => {
     const parsedPdf = await parsePdf(result.content, true, 'password')
     parsedPdf.pages[0].text.includes('foo').should.be.ok()
   })
+
+  it('pdfMeta should add information to output pdf', async () => {
+    const result = await jsreport.render({
+      template: {
+        content: 'foo',
+        name: 'content',
+        engine: 'none',
+        recipe: 'chrome-pdf',
+        pdfMeta: {
+          title: 'Foo-title',
+          author: 'Foo-author',
+          subject: 'Foo-subject',
+          keywords: 'Foo-keywords',
+          creator: 'Foo-creator',
+          producer: 'Foo-producer'
+        }
+      }
+    })
+
+    result.content.toString().should
+      .containEql('Foo-title')
+      .and.containEql('Foo-author')
+      .and.containEql('Foo-subject')
+      .and.containEql('Foo-keywords')
+      .and.containEql('Foo-creator')
+      .and.containEql('Foo-producer')
+  })
 })
 
 describe('pdf utils with http-server templating strategy', () => {
