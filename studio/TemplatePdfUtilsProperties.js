@@ -4,20 +4,62 @@ import * as Constants from './constants.js'
 
 export default class Properties extends Component {
   static title (entity, entities) {
-    if (!entity.pdfOperations || entity.pdfOperations.length === 0) {
+    if (
+      (!entity.pdfOperations || entity.pdfOperations.length === 0) &&
+      entity.pdfMeta == null &&
+      entity.pdfPassword == null &&
+      (entity.pdfSign == null || entity.pdfSign.certificateAssetShortid == null)
+    ) {
       return 'pdf utils'
     }
 
+    let title = 'pdf utils:'
+
     const getTemplate = (shortid) => Studio.getEntityByShortid(shortid, false) || { name: '' }
-    return 'pdf utils: ' + entity.pdfOperations.map(o => getTemplate(o.templateShortid).name).join(', ')
+
+    if (entity.pdfOperations && entity.pdfOperations.length > 0) {
+      title = `${title} ${entity.pdfOperations.map(o => getTemplate(o.templateShortid).name).join(', ')}`
+    }
+
+    let extra = []
+
+    if (entity.pdfMeta != null) {
+      extra.push('meta')
+    }
+
+    if (
+      entity.pdfPassword != null &&
+      (
+        entity.pdfPassword.password != null ||
+        entity.pdfPassword.ownerPassword != null
+      )
+    ) {
+      extra.push('password')
+    }
+
+    if (entity.pdfSign != null && entity.pdfSign.certificateAssetShortid != null) {
+      extra.push('sign')
+    }
+
+    if (extra.length > 0) {
+      title = `${title} (${extra.join(', ')})`
+    }
+
+    return title
+  }
+
+  static selectAssets (entities) {
+    return Object.keys(entities).filter((k) => entities[k].__entitySet === 'assets').map((k) => entities[k])
   }
 
   componentDidMount () {
     this.removeInvalidTemplateReferences()
+    this.removeInvalidAssetReferences()
   }
 
   componentDidUpdate () {
     this.removeInvalidTemplateReferences()
+    this.removeInvalidAssetReferences()
   }
 
   openEditor () {
@@ -55,6 +97,26 @@ export default class Properties extends Component {
 
     if (hasTemplateReferences && updatedOperations.length !== entity.pdfOperations.length) {
       onChange({ _id: entity._id, pdfOperations: updatedOperations })
+    }
+  }
+
+  removeInvalidAssetReferences () {
+    const { entity, entities, onChange } = this.props
+
+    if (!entity.pdfSign) {
+      return
+    }
+
+    const updatedAssetItems = Object.keys(entities).filter((k) => entities[k].__entitySet === 'assets' && entities[k].shortid === entity.pdfSign.certificateAssetShortid)
+
+    if (updatedAssetItems.length === 0 && entity.pdfSign.certificateAssetShortid) {
+      onChange({
+        _id: entity._id,
+        pdfSign: {
+          ...entity.pdfSign,
+          certificateAssetShortid: null
+        }
+      })
     }
   }
 
