@@ -546,7 +546,7 @@ describe('pdf utils', () => {
 
     const nextLog = logs[startingLogIndex + 1]
 
-    nextLog.should.be.eql('Detected 1 pdf operation(s) to process')
+    nextLog.should.be.containEql('detected 1 pdf operation(s) to process')
   })
 
   it('should be able to ignore disabled operations', async () => {
