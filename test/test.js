@@ -112,7 +112,6 @@ describe('pdf utils', () => {
 
     const parsedPdf = await parsePdf(result.content, true)
 
-    parsedPdf.pages[0].group.should.be.eql('SomeText')
     parsedPdf.pages[0].text.includes('SomeText').should.be.true()
   })
 
@@ -137,7 +136,6 @@ describe('pdf utils', () => {
 
     const parsedPdf = await parsePdf(result.content, true)
 
-    parsedPdf.pages[0].group.should.be.eql('Different')
     parsedPdf.pages[0].text.includes('Different').should.be.true()
   })
 
@@ -152,7 +150,7 @@ describe('pdf utils', () => {
 
     const result = await jsreport.render({
       template: {
-        content: `<span>test</span>{{{pdfCreatePagesGroup "1"}}}<div style='page-break-before: always'>hello</div>`,
+        content: `a{{{pdfCreatePagesGroup "1"}}}<div style='page-break-before: always' />b`,
         engine: 'handlebars',
         name: 'content',
         recipe: 'chrome-pdf',
@@ -162,8 +160,8 @@ describe('pdf utils', () => {
 
     const parsedPdf = await parsePdf(result.content, true)
 
-    parsedPdf.pages[0].group.should.be.eql('1')
-    parsedPdf.pages[1].group.should.be.eql('1')
+    parsedPdf.pages[0].text.should.containEql('1')
+    parsedPdf.pages[1].text.should.containEql('1b')
   })
 
   it('merge with renderForEveryPage should be able to use pdfCreatePagesGroup helper with hash params', async () => {
@@ -288,9 +286,6 @@ describe('pdf utils', () => {
 
     const parsedPdf = await parsePdf(result.content, true)
 
-    parsedPdf.pages[0].items.should.have.length(2)
-    parsedPdf.pages[0].items[0].should.be.eql('a')
-    parsedPdf.pages[0].items[1].should.be.eql('b')
     parsedPdf.pages[0].text.includes('ab').should.be.true()
   })
 
@@ -609,9 +604,7 @@ describe('pdf utils', () => {
 
     const parsedPdf = await parsePdf(result.content, true)
 
-    parsedPdf.pages[0].group.should.be.eql('Main')
     parsedPdf.pages[0].text.includes('Main').should.be.ok()
-    parsedPdf.pages[1].group.should.be.eql('Appended')
     parsedPdf.pages[1].text.includes('Appended').should.be.ok()
   })
 
@@ -912,17 +905,10 @@ describe('pdf utils', () => {
         engine: 'handlebars',
         recipe: 'chrome-pdf',
         pdfOperations: [{
-          type: 'append',
+          type: 'merge',
+          renderForEveryPage: true,
           template: {
-            content: `
-              {{getItemContent $pdf.pages}}
-            `,
-            helpers: `
-              function getItemContent (pages) {
-                console.log(pages)
-                return 'some'
-              }
-            `,
+            content: `{{#with (lookup $pdf.pages $pdf.pageIndex)}}{{items.[0].text}}{{/with}}`,
             engine: 'handlebars',
             recipe: 'chrome-pdf'
           }
@@ -931,9 +917,8 @@ describe('pdf utils', () => {
     })
 
     const parsedPdf = await parsePdf(result.content, true)
-    parsedPdf.pages.should.have.length(2)
-    parsedPdf.pages[0].items.length.should.be.eql(1)
-    parsedPdf.pages[0].items[0].text.should.be.eql('testing text')
+
+    parsedPdf.pages[0].text.should.containEql('testing text')
   })
 
   it('should be able to add outlines', async () => {
@@ -966,6 +951,31 @@ describe('pdf utils', () => {
     })
 
     result.content.toString().should.containEql('/Outlines')
+  })
+
+  it('the hidden text for groups and items should be removed', async () => {
+    await jsreport.documentStore.collection('templates').insert({
+      content: 'header',
+      shortid: 'header',
+      name: 'header',
+      engine: 'handlebars',
+      recipe: 'chrome-pdf'
+    })
+
+    const result = await jsreport.render({
+      template: {
+        content: `{{{pdfCreatePagesGroup "SomeText"}}}{{{pdfAddPageItem "v"}}}`,
+        engine: 'handlebars',
+        name: 'content',
+        recipe: 'chrome-pdf',
+        pdfOperations: [{ type: 'merge', renderForEveryPage: true, templateShortid: 'header' }]
+      }
+    })
+
+    const parsedPdf = await parsePdf(result.content, true)
+
+    parsedPdf.pages[0].text.should.not.containEql('group')
+    parsedPdf.pages[0].text.should.not.containEql('item')
   })
 
   it('should expose jsreport-proxy pdfUtils (.parse)', async () => {
