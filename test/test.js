@@ -2,6 +2,7 @@ const JsReport = require('jsreport-core')
 const parsePdf = require('../lib/utils/parsePdf')
 const fs = require('fs')
 const path = require('path')
+const pdfjs = require('jsreport-pdfjs')
 const { extractSignature } = require('node-signpdf/dist/helpers.js')
 const should = require('should')
 
@@ -1326,6 +1327,59 @@ describe('pdf utils', () => {
     const { signature, signedData } = extractSignature(result.content)
     signature.should.be.of.type('string')
     signedData.should.be.instanceOf(Buffer)
+  })
+
+  it('pdfFormElement with text type', async () => {
+    const result = await jsreport.render({
+      template: {
+        recipe: 'chrome-pdf',
+        engine: 'handlebars',
+        content: `something before
+        <span style='font-family: Calibri'>
+        {{{pdfFormElement name='test' value='value' defaultValue='defaultValue' align='right' type='text' width='100px' height='20px'}}}
+        </span>
+        and after`
+      }
+    })
+
+    const doc = new pdfjs.ExternalDocument(result.content)
+
+    const acroForm = doc.catalog.get('AcroForm').object
+    should(acroForm).not.be.null()
+    acroForm.properties.get('NeedAppearances').toString().should.be.eql('true')
+    const fonts = acroForm.properties.get('DR').get('Font')
+
+    should(doc.pages.get('Kids')[0].object.properties.get('Annots')[0].object).not.be.null()
+
+    const field = acroForm.properties.get('Fields')[0].object
+    field.properties.get('T').toString().should.be.eql('(test)')
+    field.properties.get('FT').toString().should.be.eql('/Tx')
+    field.properties.get('DV').toString().should.be.eql('(defaultValue)')
+    field.properties.get('V').toString().should.be.eql('(value)')
+    field.properties.get('Q').toString().should.be.eql('2')// align
+
+    const da = field.properties.get('DA').toString()
+    const fontRef = da.substring(1, da.length - 1).split(' ')[0]
+    should(fonts.get(fontRef)).not.be.null()
+    fonts.get(fontRef).object.properties.get('BaseFont').toString().should.be.eql('/Calibri')
+  })
+
+  it('pdfFormElement with combo type', async () => {
+    const result = await jsreport.render({
+      template: {
+        recipe: 'chrome-pdf',
+        engine: 'handlebars',
+        content: `{{{pdfFormElement name='test' type='combo' value='b' items='a,b,c' width='100px' height='20px'}}}`
+      }
+    })
+
+    const doc = new pdfjs.ExternalDocument(result.content)
+
+    const acroForm = doc.catalog.get('AcroForm').object
+    const field = acroForm.properties.get('Fields')[0].object
+
+    field.properties.get('FT').toString().should.be.eql('/Ch')
+    field.properties.get('Opt').toString().should.be.eql('[(a) (b) (c)]')
   })
 })
 
