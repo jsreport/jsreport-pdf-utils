@@ -62,6 +62,7 @@
     "jsreport-pdfjs": "github:jsreport/pdfjs",
     "lodash.omit": "4.5.0",
     "node-signpdf": "0.3.0",
+    "parse-color": "1.0.0",
     "pdfjs-dist": "2.0.489"
   },
   "files": [

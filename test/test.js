@@ -1335,13 +1335,14 @@ describe('pdf utils', () => {
         recipe: 'chrome-pdf',
         engine: 'handlebars',
         content: `something before
-        <span style='font-family: Calibri'>
-        {{{pdfFormElement name='test' value='value' defaultValue='defaultValue' align='right' type='text' width='100px' height='20px'}}}
+        <span>
+        {{{pdfFormElement fontFamily='Helvetica' readOnly=true backgroundColor='#00FF00' fontSize='12px' color='#FF0000' name='test' value='value' defaultValue='defaultValue' textAlign='right' type='text' width='100px' height='20px'}}}
         </span>
         and after`
       }
     })
 
+    fs.writeFileSync('out.pdf', result.content)
     const doc = new pdfjs.ExternalDocument(result.content)
 
     const acroForm = doc.catalog.get('AcroForm').object
@@ -1356,12 +1357,15 @@ describe('pdf utils', () => {
     field.properties.get('FT').toString().should.be.eql('/Tx')
     field.properties.get('DV').toString().should.be.eql('(defaultValue)')
     field.properties.get('V').toString().should.be.eql('(value)')
-    field.properties.get('Q').toString().should.be.eql('2')// align
+    field.properties.get('Q').should.be.eql(2)// textAlign
+    field.properties.get('Ff').should.be.eql(1)// read only flag
+    field.properties.get('DA').toString().should.be.eql('(/Helvetica 12 Tf 1 0 0 rg)')
+    field.properties.get('MK').get('BG').toString().should.be.eql('[0 1 0]')
 
     const da = field.properties.get('DA').toString()
     const fontRef = da.substring(1, da.length - 1).split(' ')[0]
     should(fonts.get(fontRef)).not.be.null()
-    fonts.get(fontRef).object.properties.get('BaseFont').toString().should.be.eql('/Calibri')
+    fonts.get(fontRef).object.properties.get('BaseFont').toString().should.be.eql('/Helvetica')
   })
 
   it('pdfFormElement with combo type', async () => {
@@ -1380,6 +1384,68 @@ describe('pdf utils', () => {
 
     field.properties.get('FT').toString().should.be.eql('/Ch')
     field.properties.get('Opt').toString().should.be.eql('[(a) (b) (c)]')
+  })
+
+  it('pdfFormElement with submit/reset button', async () => {
+    const result = await jsreport.render({
+      template: {
+        recipe: 'chrome-pdf',
+        engine: 'handlebars',
+        content: `
+          {{{pdfFormElement name='btn' type='button' exportFormat=true url='http://myendpoint.com' action='submit' label='submit' width='200px' height='10px'}}}
+          {{{pdfFormElement name='btn' type='button' action='reset' label='submit' width='200px' height='10px'}}}
+        `
+      }
+    })
+
+    const doc = new pdfjs.ExternalDocument(result.content)
+
+    const acroForm = doc.catalog.get('AcroForm').object
+
+    const submitField = acroForm.properties.get('Fields')[0].object
+    submitField.properties.get('FT').toString().should.be.eql('/Btn')
+    submitField.properties.get('A').get('S').toString().should.be.eql('/SubmitForm')
+    submitField.properties.get('A').get('F').toString().should.be.eql('(http://myendpoint.com)')
+    submitField.properties.get('A').get('Type').toString().should.be.eql('/Action')
+    submitField.properties.get('A').get('Flags').should.be.eql(4)
+
+    const resetField = acroForm.properties.get('Fields')[1].object
+    resetField.properties.get('FT').toString().should.be.eql('/Btn')
+    resetField.properties.get('A').get('S').toString().should.be.eql('/ResetForm')
+    resetField.properties.get('A').get('Type').toString().should.be.eql('/Action')
+  })
+
+  it('pdfFormElement with custom font shouldnt other loose text', async () => {
+    const result = await jsreport.render({
+      template: {
+        recipe: 'chrome-pdf',
+        engine: 'handlebars',
+        content: `<html>
+        <head>
+            <style>
+                @font-face {
+                    font-family: 'Helvetica';
+                    src: url(data:font/otf;base64,${fs.readFileSync(path.join(__dirname, 'Helvetica.otf')).toString('base64')});
+                    format('woff');
+                }
+            </style>        
+        </head>
+        
+        <body>
+            <div style='font-family:Helvetica'>                 
+                {{{pdfFormElement name='btn1' type='button' type='submit' width='200px' height='20px' label='foRm'}}}     
+            </div>    
+             <div>                 
+                hello
+            </div>    
+        </body>
+        
+        </html>`
+      }
+    })
+
+    const parsedPdf = await parsePdf(result.content, true)
+    parsedPdf.pages[0].text.should.containEql('hello')
   })
 })
 
