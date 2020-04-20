@@ -1195,6 +1195,23 @@ describe('pdf utils', () => {
     parsedPdf.pages[0].text.includes('foo').should.be.ok()
   })
 
+  it('pdfPassword should encrypt output pdf with proper password', async () => {
+    const result = await jsreport.render({
+      template: {
+        content: 'foo',
+        name: 'content',
+        engine: 'none',
+        recipe: 'chrome-pdf',
+        pdfPassword: {
+          password: 'password'
+        }
+      }
+    })
+
+    const parsedPdf = await parsePdf(result.content, true)
+    should(parsedPdf.pages[0].text).not.be.ok()
+  })
+
   it('pdfMeta should add information to output pdf', async () => {
     const result = await jsreport.render({
       template: {
