@@ -1346,14 +1346,14 @@ describe('pdf utils', () => {
     signedData.should.be.instanceOf(Buffer)
   })
 
-  it('pdfFormElement with text type', async () => {
+  it('pdfFormField with text type', async () => {
     const result = await jsreport.render({
       template: {
         recipe: 'chrome-pdf',
         engine: 'handlebars',
         content: `something before
         <span>
-        {{{pdfFormElement fontFamily='Helvetica' readOnly=true backgroundColor='#00FF00' fontSize='12px' color='#FF0000' name='test' value='value' defaultValue='defaultValue' textAlign='right' type='text' width='100px' height='20px'}}}
+        {{{pdfFormField fontFamily='Helvetica' readOnly=true backgroundColor='#00FF00' fontSize='12px' color='#FF0000' name='test' value='value' defaultValue='defaultValue' textAlign='right' type='text' width='100px' height='20px'}}}
         </span>
         and after`
       }
@@ -1385,12 +1385,12 @@ describe('pdf utils', () => {
     fonts.get(fontRef).object.properties.get('BaseFont').toString().should.be.eql('/Helvetica')
   })
 
-  it('pdfFormElement with text type and format', async () => {
+  it('pdfFormField with text type and format', async () => {
     const result = await jsreport.render({
       template: {
         recipe: 'chrome-pdf',
         engine: 'handlebars',
-        content: `{{{pdfFormElement format-type='number' format-nDec=2 format-sepComma=true format-getStyle='ParensRed' format-currency='$' format-currencyPrepend=true name='test' type='text' width='300px' height='20px'}}}`
+        content: `{{{pdfFormField format-type='number' format-nDec=2 format-sepComma=true format-getStyle='ParensRed' format-currency='$' format-currencyPrepend=true name='test' type='text' width='300px' height='20px'}}}`
       }
     })
 
@@ -1406,24 +1406,24 @@ describe('pdf utils', () => {
     field.properties.get('AA').get('F').get('JS').toString().should.be.eql('(AFNumber_Format\\(2,0,"MinusBlack",null,"$",true\\);)')
   })
 
-  it('pdfFormElement test', async () => {
+  it('pdfFormField test', async () => {
     const result = await jsreport.render({
       template: {
         recipe: 'chrome-pdf',
         engine: 'handlebars',
-        content: `{{{pdfFormElement format-type='date' format-param='dd.mm yyyy' name='test' type='text' width='300px' height='20px'}}}`
+        content: `{{{pdfFormField format-type='date' format-param='dd.mm yyyy' name='test' type='text' width='300px' height='20px'}}}`
       }
     })
 
     fs.writeFileSync('out.pdf', result.content)
   })
 
-  it('pdfFormElement with combo type', async () => {
+  it('pdfFormField with combo type', async () => {
     const result = await jsreport.render({
       template: {
         recipe: 'chrome-pdf',
         engine: 'handlebars',
-        content: `{{{pdfFormElement name='test' type='combo' value='b' items='a,b,c' width='100px' height='20px'}}}`
+        content: `{{{pdfFormField name='test' type='combo' value='b' items='a,b,c' width='100px' height='20px'}}}`
       }
     })
 
@@ -1437,14 +1437,14 @@ describe('pdf utils', () => {
     field.properties.get('Opt').toString().should.be.eql('[(a) (b) (c)]')
   })
 
-  it('pdfFormElement with submit/reset button', async () => {
+  it('pdfFormField with submit/reset button', async () => {
     const result = await jsreport.render({
       template: {
         recipe: 'chrome-pdf',
         engine: 'handlebars',
         content: `
-          {{{pdfFormElement name='btn1' type='button' color='#FF0000' exportFormat=true url='http://myendpoint.com' action='submit' label='submit' width='200px' height='50px'}}}
-          {{{pdfFormElement name='btn2' type='button' action='reset' label='reset' width='200px' height='50px'}}}
+          {{{pdfFormField name='btn1' type='button' color='#FF0000' exportFormat=true url='http://myendpoint.com' action='submit' label='submit' width='200px' height='50px'}}}
+          {{{pdfFormField name='btn2' type='button' action='reset' label='reset' width='200px' height='50px'}}}
         `
       }
     })
@@ -1468,7 +1468,7 @@ describe('pdf utils', () => {
     resetField.properties.get('A').get('Type').toString().should.be.eql('/Action')
   })
 
-  it('pdfFormElement with custom font shouldnt other loose text', async () => {
+  it('pdfFormField with custom font shouldnt other loose text', async () => {
     const result = await jsreport.render({
       template: {
         recipe: 'chrome-pdf',
@@ -1486,7 +1486,7 @@ describe('pdf utils', () => {
         
         <body>
             <div style='font-family:Helvetica'>                 
-                {{{pdfFormElement name='btn1' type='button' type='submit' width='200px' height='20px' label='foRm'}}}     
+                {{{pdfFormField name='btn1' type='button' type='submit' width='200px' height='20px' label='foRm'}}}     
             </div>    
              <div>                 
                 hello
