@@ -1368,6 +1368,39 @@ describe('pdf utils', () => {
     fonts.get(fontRef).object.properties.get('BaseFont').toString().should.be.eql('/Helvetica')
   })
 
+  it('pdfFormElement with text type and format', async () => {
+    const result = await jsreport.render({
+      template: {
+        recipe: 'chrome-pdf',
+        engine: 'handlebars',
+        content: `{{{pdfFormElement format-type='number' format-nDec=2 format-sepComma=true format-getStyle='ParensRed' format-currency='$' format-currencyPrepend=true name='test' type='text' width='300px' height='20px'}}}`
+      }
+    })
+
+    fs.writeFileSync('out.pdf', result.content)
+    const doc = new pdfjs.ExternalDocument(result.content)
+
+    const acroForm = doc.catalog.get('AcroForm').object
+    const field = acroForm.properties.get('Fields')[0].object
+    field.properties.get('AA').get('K').get('S').toString().should.be.eql('/JavaScript')
+    field.properties.get('AA').get('K').get('JS').toString().should.be.eql('(AFNumber_Keystroke\\(2,0,"MinusBlack",null,"$",true\\);)')
+
+    field.properties.get('AA').get('F').get('S').toString().should.be.eql('/JavaScript')
+    field.properties.get('AA').get('F').get('JS').toString().should.be.eql('(AFNumber_Format\\(2,0,"MinusBlack",null,"$",true\\);)')
+  })
+
+  it('pdfFormElement test', async () => {
+    const result = await jsreport.render({
+      template: {
+        recipe: 'chrome-pdf',
+        engine: 'handlebars',
+        content: `{{{pdfFormElement format-type='date' format-param='dd.mm yyyy' name='test' type='text' width='300px' height='20px'}}}`
+      }
+    })
+
+    fs.writeFileSync('out.pdf', result.content)
+  })
+
   it('pdfFormElement with combo type', async () => {
     const result = await jsreport.render({
       template: {
@@ -1382,6 +1415,7 @@ describe('pdf utils', () => {
     const acroForm = doc.catalog.get('AcroForm').object
     const field = acroForm.properties.get('Fields')[0].object
 
+    field.properties.get('Ff').should.be.eql(131072)
     field.properties.get('FT').toString().should.be.eql('/Ch')
     field.properties.get('Opt').toString().should.be.eql('[(a) (b) (c)]')
   })
@@ -1392,13 +1426,14 @@ describe('pdf utils', () => {
         recipe: 'chrome-pdf',
         engine: 'handlebars',
         content: `
-          {{{pdfFormElement name='btn' type='button' exportFormat=true url='http://myendpoint.com' action='submit' label='submit' width='200px' height='10px'}}}
-          {{{pdfFormElement name='btn' type='button' action='reset' label='submit' width='200px' height='10px'}}}
+          {{{pdfFormElement name='btn1' type='button' color='#FF0000' exportFormat=true url='http://myendpoint.com' action='submit' label='submit' width='200px' height='50px'}}}
+          {{{pdfFormElement name='btn2' type='button' action='reset' label='reset' width='200px' height='50px'}}}
         `
       }
     })
 
     const doc = new pdfjs.ExternalDocument(result.content)
+    fs.writeFileSync('out.pdf', result.content)
 
     const acroForm = doc.catalog.get('AcroForm').object
 
@@ -1408,6 +1443,7 @@ describe('pdf utils', () => {
     submitField.properties.get('A').get('F').toString().should.be.eql('(http://myendpoint.com)')
     submitField.properties.get('A').get('Type').toString().should.be.eql('/Action')
     submitField.properties.get('A').get('Flags').should.be.eql(4)
+    submitField.properties.get('Ff').should.be.eql(65536)
 
     const resetField = acroForm.properties.get('Fields')[1].object
     resetField.properties.get('FT').toString().should.be.eql('/Btn')
