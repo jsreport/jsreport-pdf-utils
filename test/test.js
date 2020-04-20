@@ -2,6 +2,7 @@ const JsReport = require('jsreport-core')
 const parsePdf = require('../lib/utils/parsePdf')
 const fs = require('fs')
 const path = require('path')
+const pdfjs = require('jsreport-pdfjs')
 const { extractSignature } = require('node-signpdf/dist/helpers.js')
 const should = require('should')
 
@@ -1326,6 +1327,161 @@ describe('pdf utils', () => {
     const { signature, signedData } = extractSignature(result.content)
     signature.should.be.of.type('string')
     signedData.should.be.instanceOf(Buffer)
+  })
+
+  it('pdfFormElement with text type', async () => {
+    const result = await jsreport.render({
+      template: {
+        recipe: 'chrome-pdf',
+        engine: 'handlebars',
+        content: `something before
+        <span>
+        {{{pdfFormElement fontFamily='Helvetica' readOnly=true backgroundColor='#00FF00' fontSize='12px' color='#FF0000' name='test' value='value' defaultValue='defaultValue' textAlign='right' type='text' width='100px' height='20px'}}}
+        </span>
+        and after`
+      }
+    })
+
+    fs.writeFileSync('out.pdf', result.content)
+    const doc = new pdfjs.ExternalDocument(result.content)
+
+    const acroForm = doc.catalog.get('AcroForm').object
+    should(acroForm).not.be.null()
+    acroForm.properties.get('NeedAppearances').toString().should.be.eql('true')
+    const fonts = acroForm.properties.get('DR').get('Font')
+
+    should(doc.pages.get('Kids')[0].object.properties.get('Annots')[0].object).not.be.null()
+
+    const field = acroForm.properties.get('Fields')[0].object
+    field.properties.get('T').toString().should.be.eql('(test)')
+    field.properties.get('FT').toString().should.be.eql('/Tx')
+    field.properties.get('DV').toString().should.be.eql('(defaultValue)')
+    field.properties.get('V').toString().should.be.eql('(value)')
+    field.properties.get('Q').should.be.eql(2)// textAlign
+    field.properties.get('Ff').should.be.eql(1)// read only flag
+    field.properties.get('DA').toString().should.be.eql('(/Helvetica 12 Tf 1 0 0 rg)')
+    field.properties.get('MK').get('BG').toString().should.be.eql('[0 1 0]')
+
+    const da = field.properties.get('DA').toString()
+    const fontRef = da.substring(1, da.length - 1).split(' ')[0]
+    should(fonts.get(fontRef)).not.be.null()
+    fonts.get(fontRef).object.properties.get('BaseFont').toString().should.be.eql('/Helvetica')
+  })
+
+  it('pdfFormElement with text type and format', async () => {
+    const result = await jsreport.render({
+      template: {
+        recipe: 'chrome-pdf',
+        engine: 'handlebars',
+        content: `{{{pdfFormElement format-type='number' format-nDec=2 format-sepComma=true format-getStyle='ParensRed' format-currency='$' format-currencyPrepend=true name='test' type='text' width='300px' height='20px'}}}`
+      }
+    })
+
+    fs.writeFileSync('out.pdf', result.content)
+    const doc = new pdfjs.ExternalDocument(result.content)
+
+    const acroForm = doc.catalog.get('AcroForm').object
+    const field = acroForm.properties.get('Fields')[0].object
+    field.properties.get('AA').get('K').get('S').toString().should.be.eql('/JavaScript')
+    field.properties.get('AA').get('K').get('JS').toString().should.be.eql('(AFNumber_Keystroke\\(2,0,"MinusBlack",null,"$",true\\);)')
+
+    field.properties.get('AA').get('F').get('S').toString().should.be.eql('/JavaScript')
+    field.properties.get('AA').get('F').get('JS').toString().should.be.eql('(AFNumber_Format\\(2,0,"MinusBlack",null,"$",true\\);)')
+  })
+
+  it('pdfFormElement test', async () => {
+    const result = await jsreport.render({
+      template: {
+        recipe: 'chrome-pdf',
+        engine: 'handlebars',
+        content: `{{{pdfFormElement format-type='date' format-param='dd.mm yyyy' name='test' type='text' width='300px' height='20px'}}}`
+      }
+    })
+
+    fs.writeFileSync('out.pdf', result.content)
+  })
+
+  it('pdfFormElement with combo type', async () => {
+    const result = await jsreport.render({
+      template: {
+        recipe: 'chrome-pdf',
+        engine: 'handlebars',
+        content: `{{{pdfFormElement name='test' type='combo' value='b' items='a,b,c' width='100px' height='20px'}}}`
+      }
+    })
+
+    const doc = new pdfjs.ExternalDocument(result.content)
+
+    const acroForm = doc.catalog.get('AcroForm').object
+    const field = acroForm.properties.get('Fields')[0].object
+
+    field.properties.get('Ff').should.be.eql(131072)
+    field.properties.get('FT').toString().should.be.eql('/Ch')
+    field.properties.get('Opt').toString().should.be.eql('[(a) (b) (c)]')
+  })
+
+  it('pdfFormElement with submit/reset button', async () => {
+    const result = await jsreport.render({
+      template: {
+        recipe: 'chrome-pdf',
+        engine: 'handlebars',
+        content: `
+          {{{pdfFormElement name='btn1' type='button' color='#FF0000' exportFormat=true url='http://myendpoint.com' action='submit' label='submit' width='200px' height='50px'}}}
+          {{{pdfFormElement name='btn2' type='button' action='reset' label='reset' width='200px' height='50px'}}}
+        `
+      }
+    })
+
+    const doc = new pdfjs.ExternalDocument(result.content)
+    fs.writeFileSync('out.pdf', result.content)
+
+    const acroForm = doc.catalog.get('AcroForm').object
+
+    const submitField = acroForm.properties.get('Fields')[0].object
+    submitField.properties.get('FT').toString().should.be.eql('/Btn')
+    submitField.properties.get('A').get('S').toString().should.be.eql('/SubmitForm')
+    submitField.properties.get('A').get('F').toString().should.be.eql('(http://myendpoint.com)')
+    submitField.properties.get('A').get('Type').toString().should.be.eql('/Action')
+    submitField.properties.get('A').get('Flags').should.be.eql(4)
+    submitField.properties.get('Ff').should.be.eql(65536)
+
+    const resetField = acroForm.properties.get('Fields')[1].object
+    resetField.properties.get('FT').toString().should.be.eql('/Btn')
+    resetField.properties.get('A').get('S').toString().should.be.eql('/ResetForm')
+    resetField.properties.get('A').get('Type').toString().should.be.eql('/Action')
+  })
+
+  it('pdfFormElement with custom font shouldnt other loose text', async () => {
+    const result = await jsreport.render({
+      template: {
+        recipe: 'chrome-pdf',
+        engine: 'handlebars',
+        content: `<html>
+        <head>
+            <style>
+                @font-face {
+                    font-family: 'Helvetica';
+                    src: url(data:font/otf;base64,${fs.readFileSync(path.join(__dirname, 'Helvetica.otf')).toString('base64')});
+                    format('woff');
+                }
+            </style>        
+        </head>
+        
+        <body>
+            <div style='font-family:Helvetica'>                 
+                {{{pdfFormElement name='btn1' type='button' type='submit' width='200px' height='20px' label='foRm'}}}     
+            </div>    
+             <div>                 
+                hello
+            </div>    
+        </body>
+        
+        </html>`
+      }
+    })
+
+    const parsedPdf = await parsePdf(result.content, true)
+    parsedPdf.pages[0].text.should.containEql('hello')
   })
 })
 
