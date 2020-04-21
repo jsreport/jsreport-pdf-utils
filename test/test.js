@@ -1390,7 +1390,7 @@ describe('pdf utils', () => {
       template: {
         recipe: 'chrome-pdf',
         engine: 'handlebars',
-        content: `{{{pdfFormField format-type='number' format-nDec=2 format-sepComma=true format-getStyle='ParensRed' format-currency='$' format-currencyPrepend=true name='test' type='text' width='300px' height='20px'}}}`
+        content: `{{{pdfFormField formatType='number' formatFractionalDigits=2 formatSepComma=true formatNegStyle='ParensRed' formatCurrency='$' formatCurrencyPrepend=true name='test' type='text' width='300px' height='20px'}}}`
       }
     })
 
@@ -1400,22 +1400,10 @@ describe('pdf utils', () => {
     const acroForm = doc.catalog.get('AcroForm').object
     const field = acroForm.properties.get('Fields')[0].object
     field.properties.get('AA').get('K').get('S').toString().should.be.eql('/JavaScript')
-    field.properties.get('AA').get('K').get('JS').toString().should.be.eql('(AFNumber_Keystroke\\(2,0,"MinusBlack",null,"$",true\\);)')
+    field.properties.get('AA').get('K').get('JS').toString().should.be.eql('(AFNumber_Keystroke\\(2,0,"ParensRed",null,"$",true\\);)')
 
     field.properties.get('AA').get('F').get('S').toString().should.be.eql('/JavaScript')
-    field.properties.get('AA').get('F').get('JS').toString().should.be.eql('(AFNumber_Format\\(2,0,"MinusBlack",null,"$",true\\);)')
-  })
-
-  it('pdfFormField test', async () => {
-    const result = await jsreport.render({
-      template: {
-        recipe: 'chrome-pdf',
-        engine: 'handlebars',
-        content: `{{{pdfFormField format-type='date' format-param='dd.mm yyyy' name='test' type='text' width='300px' height='20px'}}}`
-      }
-    })
-
-    fs.writeFileSync('out.pdf', result.content)
+    field.properties.get('AA').get('F').get('JS').toString().should.be.eql('(AFNumber_Format\\(2,0,"ParensRed",null,"$",true\\);)')
   })
 
   it('pdfFormField with combo type', async () => {

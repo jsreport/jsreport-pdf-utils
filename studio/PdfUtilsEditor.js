@@ -389,7 +389,7 @@ class PdfUtilsEditor extends Component {
             </p>
             <div style={{ marginTop: '1rem', paddingBottom: '0.5rem' }}>
               <div className='form-group'>
-                <label>Select certificate</label>
+                <label>Select certificate (asset)</label>
                 <EntityRefSelect
                   headingLabel='Select certificate'
                   value={pdfSign.certificateAssetShortid || ''}

@@ -1243,7 +1243,7 @@ var PdfUtilsEditor = function (_Component) {
                 _react2.default.createElement(
                   'label',
                   null,
-                  'Select certificate'
+                  'Select certificate (asset)'
                 ),
                 _react2.default.createElement(EntityRefSelect, {
                   headingLabel: 'Select certificate',
