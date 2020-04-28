@@ -1469,18 +1469,18 @@ describe('pdf utils', () => {
                     src: url(data:font/otf;base64,${fs.readFileSync(path.join(__dirname, 'Helvetica.otf')).toString('base64')});
                     format('woff');
                 }
-            </style>        
+            </style>
         </head>
-        
+
         <body>
-            <div style='font-family:Helvetica'>                 
-                {{{pdfFormField name='btn1' type='button' type='submit' width='200px' height='20px' label='foRm'}}}     
-            </div>    
-             <div>                 
+            <div style='font-family:Helvetica'>
+                {{{pdfFormField name='btn1' type='button' type='submit' width='200px' height='20px' label='foRm'}}}
+            </div>
+             <div>
                 hello
-            </div>    
+            </div>
         </body>
-        
+
         </html>`
       }
     })
