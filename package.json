@@ -48,7 +48,7 @@
     "jsreport-handlebars": "2.1.0",
     "jsreport-jsrender": "2.1.1",
     "jsreport-phantom-pdf": "2.5.1",
-    "jsreport-scripts": "2.3.0",
+    "jsreport-scripts": "github:jsreport/jsreport-scripts#new-scripts-api",
     "jsreport-studio-dev": "1.5.0",
     "jsreport-templates": "2.3.2",
     "mocha": "5.2.0",
