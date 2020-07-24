@@ -494,6 +494,10 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _propTypes = __webpack_require__(8);
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
 var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
@@ -502,7 +506,7 @@ var _jsreportStudio = __webpack_require__(1);
 
 var _jsreportStudio2 = _interopRequireDefault(_jsreportStudio);
 
-var _style = __webpack_require__(8);
+var _style = __webpack_require__(9);
 
 var _style2 = _interopRequireDefault(_style);
 
@@ -1279,15 +1283,21 @@ var PdfUtilsEditor = function (_Component) {
 }(_react.Component);
 
 PdfUtilsEditor.propTypes = {
-  entity: _react2.default.PropTypes.object.isRequired,
-  tab: _react2.default.PropTypes.object.isRequired,
-  onUpdate: _react2.default.PropTypes.func.isRequired
+  entity: _propTypes2.default.object.isRequired,
+  tab: _propTypes2.default.object.isRequired,
+  onUpdate: _propTypes2.default.func.isRequired
 };
 
 exports.default = PdfUtilsEditor;
 
 /***/ }),
 /* 8 */
+/***/ (function(module, exports) {
+
+module.exports = Studio.libraries['prop-types'];
+
+/***/ }),
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // extracted by mini-css-extract-plugin
