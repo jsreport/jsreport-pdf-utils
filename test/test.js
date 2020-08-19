@@ -1171,6 +1171,59 @@ describe('pdf utils', () => {
     parsedPdf.pages[1].text.includes('Second').should.be.ok()
   })
 
+  it('should expose jsreport-proxy pdfUtils (.remove)', async () => {
+    const result = await jsreport.render({
+      template: {
+        content: `<h1>Hello from Page 1</h1>
+        <div style='page-break-before: always;'></div>        
+        <h1>Hello from Page 2</h1>`,
+        engine: 'none',
+        recipe: 'chrome-pdf',
+        scripts: [{
+          content: `
+            const jsreport = require('jsreport-proxy')
+
+            async function afterRender (req, res) {
+              res.content = await jsreport.pdfUtils.removePages(res.content, 2)
+            }
+          `
+        }]
+      }
+    })
+
+    fs.writeFileSync('out.pdf', result.content)
+
+    const parsedPdf = await parsePdf(result.content, true)
+
+    parsedPdf.pages.should.have.length(1)
+    parsedPdf.pages[0].text.includes('Hello from Page 1').should.be.ok()
+  })
+
+  it('should expose jsreport-proxy pdfUtils (.remove) and remove array of page numbers', async () => {
+    const result = await jsreport.render({
+      template: {
+        content: `<h1>Hello from Page 1</h1>
+        <div style='page-break-before: always;'></div>        
+        <h1>Hello from Page 2</h1>`,
+        engine: 'none',
+        recipe: 'chrome-pdf',
+        scripts: [{
+          content: `
+            const jsreport = require('jsreport-proxy')
+
+            async function afterRender (req, res) {
+              res.content = await jsreport.pdfUtils.removePages(res.content, [1, 2])
+            }
+          `
+        }]
+      }
+    })
+
+    const parsedPdf = await parsePdf(result.content, true)
+
+    parsedPdf.pages.should.have.length(0)
+  })
+
   it('pdfPassword should encrypt output pdf', async () => {
     const result = await jsreport.render({
       template: {
