@@ -61,7 +61,9 @@ describe('pdf utils', () => {
       }
     })
 
-    const parsedPdf = await parsePdf(result.content, true)
+    const parsedPdf = await parsePdf(result.content, {
+      includeText: true
+    })
 
     parsedPdf.pages[0].text.includes('foo').should.be.ok()
     parsedPdf.pages[0].text.includes('header').should.be.ok()
@@ -86,7 +88,9 @@ describe('pdf utils', () => {
       }
     })
 
-    const parsedPdf = await parsePdf(result.content, true)
+    const parsedPdf = await parsePdf(result.content, {
+      includeText: true
+    })
 
     parsedPdf.pages[0].text.includes('1/2').should.be.ok()
     parsedPdf.pages[1].text.includes('2/2').should.be.ok()
@@ -111,7 +115,9 @@ describe('pdf utils', () => {
       }
     })
 
-    const parsedPdf = await parsePdf(result.content, true)
+    const parsedPdf = await parsePdf(result.content, {
+      includeText: true
+    })
 
     parsedPdf.pages[0].text.includes('SomeText').should.be.true()
   })
@@ -135,7 +141,9 @@ describe('pdf utils', () => {
       }
     })
 
-    const parsedPdf = await parsePdf(result.content, true)
+    const parsedPdf = await parsePdf(result.content, {
+      includeText: true
+    })
 
     parsedPdf.pages[0].text.includes('Different').should.be.true()
   })
@@ -159,7 +167,9 @@ describe('pdf utils', () => {
       }
     })
 
-    const parsedPdf = await parsePdf(result.content, true)
+    const parsedPdf = await parsePdf(result.content, {
+      includeText: true
+    })
 
     parsedPdf.pages[0].text.should.containEql('1')
     parsedPdf.pages[1].text.should.containEql('1b')
@@ -183,7 +193,9 @@ describe('pdf utils', () => {
       }
     })
 
-    const parsedPdf = await parsePdf(result.content, true)
+    const parsedPdf = await parsePdf(result.content, {
+      includeText: true
+    })
     parsedPdf.pages[0].text.includes('1').should.be.ok()
   })
 
@@ -210,7 +222,9 @@ describe('pdf utils', () => {
       }
     })
 
-    const parsedPdf = await parsePdf(result.content, true)
+    const parsedPdf = await parsePdf(result.content, {
+      includeText: true
+    })
     parsedPdf.pages[0].text.includes('number').should.be.ok()
   })
 
@@ -239,7 +253,9 @@ describe('pdf utils', () => {
       }
     })
 
-    const parsedPdf = await parsePdf(result.content, true)
+    const parsedPdf = await parsePdf(result.content, {
+      includeText: true
+    })
     parsedPdf.pages[0].text.includes('number').should.be.ok()
   })
 
@@ -262,7 +278,9 @@ describe('pdf utils', () => {
       }
     })
 
-    const parsedPdf = await parsePdf(result.content, true)
+    const parsedPdf = await parsePdf(result.content, {
+      includeText: true
+    })
     parsedPdf.pages[0].text.includes('1').should.be.ok()
   })
 
@@ -285,7 +303,9 @@ describe('pdf utils', () => {
       }
     })
 
-    const parsedPdf = await parsePdf(result.content, true)
+    const parsedPdf = await parsePdf(result.content, {
+      includeText: true
+    })
 
     parsedPdf.pages[0].text.includes('ab').should.be.true()
   })
@@ -317,7 +337,9 @@ describe('pdf utils', () => {
       }
     })
 
-    const parsedPdf = await parsePdf(result.content, true)
+    const parsedPdf = await parsePdf(result.content, {
+      includeText: true
+    })
     parsedPdf.pages[0].text.includes('header').should.be.ok()
     parsedPdf.pages[0].text.includes('footer').should.be.ok()
   })
@@ -341,7 +363,9 @@ describe('pdf utils', () => {
       }
     })
 
-    const parsedPdf = await parsePdf(result.content, true)
+    const parsedPdf = await parsePdf(result.content, {
+      includeText: true
+    })
     parsedPdf.pages[0].text.includes('header').should.be.ok()
     parsedPdf.pages[0].text.includes('Foo').should.be.ok()
   })
@@ -360,7 +384,9 @@ describe('pdf utils', () => {
       }
     })
 
-    const parsedPdf = await parsePdf(result.content, true)
+    const parsedPdf = await parsePdf(result.content, {
+      includeText: true
+    })
 
     parsedPdf.pages[0].text.includes('foo').should.be.ok()
     parsedPdf.pages[0].text.includes('header').should.be.ok()
@@ -388,7 +414,9 @@ describe('pdf utils', () => {
       }
     })
 
-    const parsedPdf = await parsePdf(result.content, true)
+    const parsedPdf = await parsePdf(result.content, {
+      includeText: true
+    })
     parsedPdf.pages[0].text.includes('foo').should.be.ok()
     parsedPdf.pages[1].text.includes('anotherpage').should.be.ok()
   })
@@ -404,7 +432,9 @@ describe('pdf utils', () => {
       }
     })
 
-    const parsedPdf = await parsePdf(result.content, true)
+    const parsedPdf = await parsePdf(result.content, {
+      includeText: true
+    })
     parsedPdf.pages[0].text.includes('foo').should.be.ok()
     parsedPdf.pages[1].text.includes('bar').should.be.ok()
   })
@@ -431,7 +461,9 @@ describe('pdf utils', () => {
       }
     })
 
-    const parsedPdf = await parsePdf(result.content, true)
+    const parsedPdf = await parsePdf(result.content, {
+      includeText: true
+    })
     parsedPdf.pages[0].text.includes('anotherpage').should.be.ok()
     parsedPdf.pages[1].text.includes('foo').should.be.ok()
   })
@@ -447,7 +479,9 @@ describe('pdf utils', () => {
       }
     })
 
-    const parsedPdf = await parsePdf(result.content, true)
+    const parsedPdf = await parsePdf(result.content, {
+      includeText: true
+    })
     parsedPdf.pages[0].text.includes('bar').should.be.ok()
     parsedPdf.pages[1].text.includes('foo').should.be.ok()
   })
@@ -479,7 +513,9 @@ describe('pdf utils', () => {
       }
     })
 
-    const parsedPdf = await parsePdf(result.content, true)
+    const parsedPdf = await parsePdf(result.content, {
+      includeText: true
+    })
     parsedPdf.pages[0].text.includes('header').should.be.ok()
   })
 
@@ -571,7 +607,9 @@ describe('pdf utils', () => {
       }
     })
 
-    const parsedPdf = await parsePdf(result.content, true)
+    const parsedPdf = await parsePdf(result.content, {
+      includeText: true
+    })
     parsedPdf.pages.should.have.length(1)
     parsedPdf.pages[0].text.should.be.eql('world')
   })
@@ -603,8 +641,9 @@ describe('pdf utils', () => {
       }
     })
 
-    const parsedPdf = await parsePdf(result.content, true)
-
+    const parsedPdf = await parsePdf(result.content, {
+      includeText: true
+    })
     parsedPdf.pages[0].text.includes('Main').should.be.ok()
     parsedPdf.pages[1].text.includes('Appended').should.be.ok()
   })
@@ -632,7 +671,9 @@ describe('pdf utils', () => {
       }
     })
 
-    const parsedPdf = await parsePdf(result.content, true)
+    const parsedPdf = await parsePdf(result.content, {
+      includeText: true
+    })
     parsedPdf.pages.should.have.length(2)
   })
 
@@ -659,7 +700,9 @@ describe('pdf utils', () => {
       }
     })
 
-    const parsedPdf = await parsePdf(result.content, true)
+    const parsedPdf = await parsePdf(result.content, {
+      includeText: true
+    })
     parsedPdf.pages.should.have.length(1)
   })
 
@@ -686,7 +729,9 @@ describe('pdf utils', () => {
       }
     })
 
-    const parsedPdf = await parsePdf(result.content, true)
+    const parsedPdf = await parsePdf(result.content, {
+      includeText: true
+    })
     parsedPdf.pages.should.have.length(1)
   })
 
@@ -712,7 +757,9 @@ describe('pdf utils', () => {
       }
     })
 
-    const parsedPdf = await parsePdf(result.content, true)
+    const parsedPdf = await parsePdf(result.content, {
+      includeText: true
+    })
     parsedPdf.pages.should.have.length(2)
     parsedPdf.pages[0].text.includes('header').should.be.ok()
     parsedPdf.pages[1].text.includes('header').should.be.ok()
@@ -740,7 +787,9 @@ describe('pdf utils', () => {
       }
     })
 
-    const parsedPdf = await parsePdf(result.content, true)
+    const parsedPdf = await parsePdf(result.content, {
+      includeText: true
+    })
     parsedPdf.pages.should.have.length(1)
     parsedPdf.pages[0].text.includes('header').should.be.ok()
     parsedPdf.pages[0].text.includes('watermark').should.be.ok()
@@ -786,7 +835,7 @@ describe('pdf utils', () => {
       recipe: 'html'
     })
 
-    const result = await jsreport.render({
+    await jsreport.render({
       template: {
         content: `
           Parent
@@ -795,52 +844,9 @@ describe('pdf utils', () => {
         `,
         name: 'content',
         engine: 'handlebars',
-        recipe: 'chrome-pdf',
-        pdfOperations: []
+        recipe: 'html'
       }
     })
-
-    const parsedPdf = await parsePdf(result.content, true)
-
-    parsedPdf.pages.should.have.length(1)
-    parsedPdf.pages[0].items.includes('parent').should.be.ok()
-    parsedPdf.pages[0].items.includes('child').should.be.ok()
-  })
-
-  // so far not supported
-  it.skip('should work with appending weasyprint pdf twice', async () => {
-    jsreport.afterRenderListeners.insert(0, 'test', (req, res) => {
-      if (req.template.content === 'weasyprint') {
-        res.content = fs.readFileSync(path.join(__dirname, 'weasyprint.pdf'))
-      }
-    })
-
-    const result = await jsreport.render({
-      template: {
-        content: `main`,
-        name: 'content',
-        engine: 'none',
-        recipe: 'chrome-pdf',
-        pdfOperations: [{
-          type: 'append',
-          template: {
-            content: `weasyprint`,
-            engine: 'handlebars',
-            recipe: 'html'
-          }
-        }, {
-          type: 'append',
-          template: {
-            content: `weasyprint`,
-            engine: 'handlebars',
-            recipe: 'html'
-          }
-        }]
-      }
-    })
-
-    const parsedPdf = await parsePdf(result.content, true)
-    parsedPdf.pages.should.have.length(3)
   })
 
   it('should work with merging word generated pdf and dont loose special characters', async () => {
@@ -867,7 +873,9 @@ describe('pdf utils', () => {
       }
     })
 
-    const parsedPdf = await parsePdf(result.content, true)
+    const parsedPdf = await parsePdf(result.content, {
+      includeText: true
+    })
     parsedPdf.pages.should.have.length(1)
     parsedPdf.pages[0].text.should.containEql('dénommé')
   })
@@ -917,7 +925,9 @@ describe('pdf utils', () => {
       }
     })
 
-    const parsedPdf = await parsePdf(result.content, true)
+    const parsedPdf = await parsePdf(result.content, {
+      includeText: true
+    })
 
     parsedPdf.pages[0].text.should.containEql('testing text')
   })
@@ -973,7 +983,9 @@ describe('pdf utils', () => {
       }
     })
 
-    const parsedPdf = await parsePdf(result.content, true)
+    const parsedPdf = await parsePdf(result.content, {
+      includeText: true
+    })
 
     parsedPdf.pages[0].text.should.not.containEql('group')
     parsedPdf.pages[0].text.should.not.containEql('item')
@@ -1039,7 +1051,9 @@ describe('pdf utils', () => {
       }
     })
 
-    const parsedPdf = await parsePdf(result.content, true)
+    const parsedPdf = await parsePdf(result.content, {
+      includeText: true
+    })
 
     parsedPdf.pages.should.have.length(2)
     parsedPdf.pages[0].text.includes('Cover').should.be.ok()
@@ -1072,8 +1086,9 @@ describe('pdf utils', () => {
       }
     })
 
-    const parsedPdf = await parsePdf(result.content, true)
-
+    const parsedPdf = await parsePdf(result.content, {
+      includeText: true
+    })
     parsedPdf.pages.should.have.length(2)
     parsedPdf.pages[0].text.includes('First').should.be.ok()
     parsedPdf.pages[1].text.includes('Second').should.be.ok()
@@ -1105,7 +1120,9 @@ describe('pdf utils', () => {
       }
     })
 
-    const parsedPdf = await parsePdf(result.content, true)
+    const parsedPdf = await parsePdf(result.content, {
+      includeText: true
+    })
 
     parsedPdf.pages.should.have.length(1)
     parsedPdf.pages[0].text.includes('First').should.be.ok()
@@ -1163,8 +1180,9 @@ describe('pdf utils', () => {
       }
     })
 
-    const parsedPdf = await parsePdf(result.content, true)
-
+    const parsedPdf = await parsePdf(result.content, {
+      includeText: true
+    })
     result.content.toString().should.containEql('/Outlines')
     parsedPdf.pages.should.have.length(2)
     parsedPdf.pages[1].text.includes('First').should.be.ok()
@@ -1191,12 +1209,59 @@ describe('pdf utils', () => {
       }
     })
 
-    fs.writeFileSync('out.pdf', result.content)
-
-    const parsedPdf = await parsePdf(result.content, true)
+    const parsedPdf = await parsePdf(result.content, {
+      includeText: true
+    })
 
     parsedPdf.pages.should.have.length(1)
     parsedPdf.pages[0].text.includes('Hello from Page 1').should.be.ok()
+  })
+
+  it('should use jsreport-proxy pdfUtils append and merge and still have hidden marks map on the same context', async () => {
+    const result = await jsreport.render({
+      template: {
+        content: 'ignore me',
+        engine: 'none',
+        recipe: 'chrome-pdf',
+        scripts: [{
+          content: `
+            const jsreport = require('jsreport-proxy')
+
+            async function afterRender (req, res) {              
+              const appendRest = await jsreport.render({
+                template: {
+                  content: '{{{pdfAddPageItem "foo"}}}',          
+                  engine: 'handlebars',
+                  recipe: 'chrome-pdf'
+                }
+              })               
+              
+              const $pdf = await jsreport.pdfUtils.parse(appendRest.content)              
+            
+              const mergeRes = await jsreport.render({
+                template: {
+                  content: '{{{$pdf.pages.[0].items.[0]}}}',                
+                  engine: 'handlebars',
+                  recipe: 'chrome-pdf'
+                },
+                data: {
+                  $pdf
+                }
+              })               
+
+              res.content = await jsreport.pdfUtils.merge(appendRest.content, mergeRes.content)
+            }
+          `
+        }]
+      }
+    })
+
+    const parsedPdf = await parsePdf(result.content, {
+      includeText: true
+    })
+
+    parsedPdf.pages.should.have.length(1)
+    parsedPdf.pages[0].text.includes('foo').should.be.ok()
   })
 
   it('should expose jsreport-proxy pdfUtils (.remove) and remove array of page numbers', async () => {
@@ -1219,7 +1284,9 @@ describe('pdf utils', () => {
       }
     })
 
-    const parsedPdf = await parsePdf(result.content, true)
+    const parsedPdf = await parsePdf(result.content, {
+      includeText: true
+    })
 
     parsedPdf.pages.should.have.length(0)
   })
@@ -1244,7 +1311,10 @@ describe('pdf utils', () => {
       }
     })
 
-    const parsedPdf = await parsePdf(result.content, true, 'password')
+    const parsedPdf = await parsePdf(result.content, {
+      includeText: true,
+      password: 'password'
+    })
     parsedPdf.pages[0].text.includes('foo').should.be.ok()
   })
 
@@ -1261,7 +1331,9 @@ describe('pdf utils', () => {
       }
     })
 
-    const parsedPdf = await parsePdf(result.content, true)
+    const parsedPdf = await parsePdf(result.content, {
+      includeText: true
+    })
     should(parsedPdf.pages[0].text).not.be.ok()
   })
 
@@ -1538,10 +1610,16 @@ describe('pdf utils', () => {
       }
     })
 
-    const parsedPdf = await parsePdf(result.content, true)
+    const parsedPdf = await parsePdf(result.content, {
+      includeText: true
+    })
     parsedPdf.pages[0].text.should.containEql('hello')
   })
 })
+
+if (!process.env.TEST_FULL) {
+  return
+}
 
 describe('pdf utils with http-server templating strategy', () => {
   let jsreport
@@ -1573,7 +1651,9 @@ describe('pdf utils with http-server templating strategy', () => {
 
     const result = await jsreport.render(req)
 
-    const parsedPdf = await parsePdf(result.content, true)
+    const parsedPdf = await parsePdf(result.content, {
+      includeText: true
+    })
     parsedPdf.pages.should.have.length(2)
   })
 })
