@@ -991,6 +991,38 @@ describe('pdf utils', () => {
     parsedPdf.pages[0].text.should.not.containEql('item')
   })
 
+  it('the hidden text for groups and items shouldnt be removed when req.options.pdfUtils.removeHiddenMarks', async () => {
+    await jsreport.documentStore.collection('templates').insert({
+      content: 'header',
+      shortid: 'header',
+      name: 'header',
+      engine: 'handlebars',
+      recipe: 'chrome-pdf'
+    })
+
+    const result = await jsreport.render({
+      template: {
+        content: `{{{pdfCreatePagesGroup "SomeText"}}}{{{pdfAddPageItem "v"}}}`,
+        engine: 'handlebars',
+        name: 'content',
+        recipe: 'chrome-pdf',
+        pdfOperations: [{ type: 'merge', renderForEveryPage: true, templateShortid: 'header' }]
+      },
+      options: {
+        pdfUtils: {
+          removeHiddenMarks: false
+        }
+      }
+    })
+
+    const parsedPdf = await parsePdf(result.content, {
+      includeText: true
+    })
+
+    parsedPdf.pages[0].text.should.containEql('group')
+    parsedPdf.pages[0].text.should.containEql('item')
+  })
+
   it('should expose jsreport-proxy pdfUtils (.parse)', async () => {
     const result = await jsreport.render({
       template: {
