@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import Studio from 'jsreport-studio'
 import styles from './style.scss'
@@ -411,9 +410,9 @@ class PdfUtilsEditor extends Component {
 }
 
 PdfUtilsEditor.propTypes = {
-  entity: PropTypes.object.isRequired,
-  tab: PropTypes.object.isRequired,
-  onUpdate: PropTypes.func.isRequired
+  entity: React.PropTypes.object.isRequired,
+  tab: React.PropTypes.object.isRequired,
+  onUpdate: React.PropTypes.func.isRequired
 }
 
 export default PdfUtilsEditor
