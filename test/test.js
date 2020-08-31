@@ -1563,6 +1563,25 @@ describe('pdf utils', () => {
     field.properties.get('AA').get('F').get('JS').toString().should.be.eql('(AFNumber_Format\\(2,0,"ParensRed",null,"$",true\\);)')
   })
 
+  it('pdfFormField with signature type', async () => {
+    const result = await jsreport.render({
+      template: {
+        recipe: 'chrome-pdf',
+        engine: 'handlebars',
+        content: `{{{pdfFormField name='test' type='signature' width='100px' height='50px'}}}`
+      }
+    })
+
+    const doc = new pdfjs.ExternalDocument(result.content)
+
+    const acroForm = doc.catalog.get('AcroForm').object
+    const field = acroForm.properties.get('Fields')[0].object
+
+    field.properties.get('FT').toString().should.be.eql('/Sig')
+    
+
+  })
+
   it('pdfFormField with combo type', async () => {
     const result = await jsreport.render({
       template: {
