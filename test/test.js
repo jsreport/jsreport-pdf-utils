@@ -1578,8 +1578,6 @@ describe('pdf utils', () => {
     const field = acroForm.properties.get('Fields')[0].object
 
     field.properties.get('FT').toString().should.be.eql('/Sig')
-    
-
   })
 
   it('pdfFormField with combo type', async () => {
