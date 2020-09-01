@@ -1278,12 +1278,6 @@ var PdfUtilsEditor = function (_Component) {
   return PdfUtilsEditor;
 }(_react.Component);
 
-PdfUtilsEditor.propTypes = {
-  entity: _react2.default.PropTypes.object.isRequired,
-  tab: _react2.default.PropTypes.object.isRequired,
-  onUpdate: _react2.default.PropTypes.func.isRequired
-};
-
 exports.default = PdfUtilsEditor;
 
 /***/ }),

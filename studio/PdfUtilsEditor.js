@@ -409,10 +409,4 @@ class PdfUtilsEditor extends Component {
   }
 }
 
-PdfUtilsEditor.propTypes = {
-  entity: React.PropTypes.object.isRequired,
-  tab: React.PropTypes.object.isRequired,
-  onUpdate: React.PropTypes.func.isRequired
-}
-
 export default PdfUtilsEditor
