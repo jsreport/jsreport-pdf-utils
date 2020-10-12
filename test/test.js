@@ -1664,6 +1664,21 @@ describe('pdf utils', () => {
     })
     parsedPdf.pages[0].text.should.containEql('hello')
   })
+
+  it('pdfFormField with national characters before', async () => {
+    const result = await jsreport.render({
+      template: {
+        recipe: 'chrome-pdf',
+        engine: 'handlebars',
+        content: `<span>š{{{pdfFormField name='name' type='text' width='130px' height='40px'}}}</span>`
+      }
+    })
+
+    const doc = new pdfjs.ExternalDocument(result.content)
+
+    const acroForm = doc.catalog.get('AcroForm').object
+    should(acroForm).not.be.null()
+  })
 })
 
 if (!process.env.TEST_FULL) {
