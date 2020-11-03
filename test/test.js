@@ -1679,6 +1679,24 @@ describe('pdf utils', () => {
     const acroForm = doc.catalog.get('AcroForm').object
     should(acroForm).not.be.null()
   })
+
+  it('pdfFormField multiple pages', async () => {
+    const result = await jsreport.render({
+      template: {
+        recipe: 'chrome-pdf',
+        engine: 'handlebars',
+        content: `
+        {{{pdfFormField name='a' type='text' width='200px' height='20px'}}}
+        <div style='page-break-before: always;'></div>
+        {{{pdfFormField name='b' type='text' width='200px' height='20px'}}}`
+      }
+    })
+
+    const doc = new pdfjs.ExternalDocument(result.content)
+
+    const acroForm = doc.catalog.get('AcroForm').object
+    acroForm.properties.get('Fields').should.have.length(2)
+  })
 })
 
 if (!process.env.TEST_FULL) {
