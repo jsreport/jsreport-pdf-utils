@@ -1416,6 +1416,32 @@ describe('pdf utils', () => {
     signedData.should.be.instanceOf(Buffer)
   })
 
+  // TODO - https://github.com/vbuch/node-signpdf/issues/98 , updating didn't help it seems
+  it.skip('pdfSign should work together with pdf password', async () => {
+    const result = await jsreport.render({
+      template: {
+        content: 'Hello',
+        engine: 'none',
+        recipe: 'chrome-pdf',
+        pdfSign: {
+          certificateAsset: {
+            content: fs.readFileSync(path.join(__dirname, 'certificate.p12')),
+            password: 'node-signpdf'
+          }
+        },
+        pdfPassword: {
+          password: 'password'
+        }
+      }
+    })
+
+    const parsedPdf = await parsePdf(result.content, {
+      includeText: true,
+      password: 'password'
+    })
+    parsedPdf.pages[0].text.includes('Hello').should.be.ok()
+  })
+
   it('pdfSign should be able to sign with reference to stored asset', async () => {
     await jsreport.documentStore.collection('assets').insert({
       name: 'certificate.p12',
