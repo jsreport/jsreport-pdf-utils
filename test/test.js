@@ -1369,6 +1369,25 @@ describe('pdf utils', () => {
     should(parsedPdf.pages[0].text).not.be.ok()
   })
 
+  it('pdfPassword should encrypt outlines', async () => {
+    const result = await jsreport.render({
+      template: {
+        content: `<a href="#root" id="root" data-pdf-outline data-pdf-outline-title='MyTitlečřšš'>link</a><h1>root</h1>`,
+        name: 'content',
+        engine: 'none',
+        recipe: 'chrome-pdf',
+        pdfPassword: {
+          password: 'a'
+        },
+        pdfMeta: {
+          title: 'řčšěřčšř'
+        }
+      }
+    })
+
+    result.content.toString().should.not.containEql('/Title (MyTitle)')
+  })
+
   it('pdfMeta should add information to output pdf', async () => {
     const result = await jsreport.render({
       template: {
