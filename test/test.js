@@ -3,7 +3,7 @@ const parsePdf = require('../lib/utils/parsePdf')
 const fs = require('fs')
 const path = require('path')
 const pdfjs = require('jsreport-pdfjs')
-const { extractSignature } = require('node-signpdf/dist/helpers.js')
+const { extractSignature } = require('node-signpdf/dist/helpers')
 const should = require('should')
 
 function initialize (strategy = 'in-process') {
