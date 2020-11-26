@@ -1435,8 +1435,7 @@ describe('pdf utils', () => {
     signedData.should.be.instanceOf(Buffer)
   })
 
-  // TODO - https://github.com/vbuch/node-signpdf/issues/98 , updating didn't help it seems
-  it.skip('pdfSign should work together with pdf password', async () => {
+  it('pdfSign should work together with pdf password', async () => {
     const result = await jsreport.render({
       template: {
         content: 'Hello',
@@ -1453,6 +1452,8 @@ describe('pdf utils', () => {
         }
       }
     })
+
+    require('fs').writeFileSync('out.pdf', result.content)
 
     const parsedPdf = await parsePdf(result.content, {
       includeText: true,
@@ -1548,6 +1549,39 @@ describe('pdf utils', () => {
     signedData.should.be.instanceOf(Buffer)
   })
 
+  it('pdfSign shouldnt break form fields', async () => {
+    const result = await jsreport.render({
+      template: {
+        content: `Hello<span>
+        {{{pdfFormField name='test' value='value' type='text' width='100px' height='20px'}}}
+        </span>`,
+        engine: 'handlebars',
+        recipe: 'chrome-pdf',
+        pdfSign: {
+          certificateAsset: {
+            content: fs.readFileSync(path.join(__dirname, 'certificate.p12')),
+            password: 'node-signpdf'
+          }
+        }
+      }
+    })
+
+    fs.writeFileSync('out.pdf', result.content)
+    const doc = new pdfjs.ExternalDocument(result.content)
+
+    const acroForm = doc.catalog.get('AcroForm').object
+    should(acroForm).not.be.null()
+
+    should(doc.pages.get('Kids')[0].object.properties.get('Annots')[0].object).not.be.null()
+
+    const field = acroForm.properties.get('Fields')[0].object
+    field.properties.get('T').toString().should.be.eql('(test)')
+
+    const { signature, signedData } = extractSignature(result.content)
+    signature.should.be.of.type('string')
+    signedData.should.be.instanceOf(Buffer)
+  })
+
   it('pdfFormField with text type', async () => {
     const result = await jsreport.render({
       template: {
@@ -1561,7 +1595,6 @@ describe('pdf utils', () => {
       }
     })
 
-    fs.writeFileSync('out.pdf', result.content)
     const doc = new pdfjs.ExternalDocument(result.content)
 
     const acroForm = doc.catalog.get('AcroForm').object
