@@ -1429,10 +1429,15 @@ describe('pdf utils', () => {
         }
       }
     })
-
+    require('fs').writeFileSync('out.pdf', result.content)
     const { signature, signedData } = extractSignature(result.content)
     signature.should.be.of.type('string')
     signedData.should.be.instanceOf(Buffer)
+
+    const doc = new pdfjs.ExternalDocument(result.content)
+
+    const acroForm = doc.catalog.get('AcroForm').object
+    should(acroForm).not.be.null()
   })
 
   it('pdfSign should work together with pdf password', async () => {
@@ -1573,13 +1578,35 @@ describe('pdf utils', () => {
     should(acroForm).not.be.null()
 
     should(doc.pages.get('Kids')[0].object.properties.get('Annots')[0].object).not.be.null()
-
-    const field = acroForm.properties.get('Fields')[0].object
+    acroForm.properties.get('Fields').should.have.length(2)
+    const field = acroForm.properties.get('Fields')[1].object
     field.properties.get('T').toString().should.be.eql('(test)')
 
     const { signature, signedData } = extractSignature(result.content)
     signature.should.be.of.type('string')
     signedData.should.be.instanceOf(Buffer)
+  })
+
+  it('pdfSign shouldnt break anchors', async () => {
+    const result = await jsreport.render({
+      template: {
+        content: `<a href='#1'>link</a><div style='page-break-before: always;'></div><h1 id='1'>navigate here</h1>`,
+        engine: 'none',
+        recipe: 'chrome-pdf',
+        pdfSign: {
+          certificateAsset: {
+            content: fs.readFileSync(path.join(__dirname, 'certificate.p12')),
+            password: 'node-signpdf'
+          }
+        }
+      }
+    })
+
+    fs.writeFileSync('out.pdf', result.content)
+    const doc = new pdfjs.ExternalDocument(result.content)
+    should(doc.catalog.get('Dests')).be.ok()
+    should(doc.catalog.get('Dests').object.properties.get('1')).be.ok()
+    doc.catalog.get('Pages').object.properties.get('Kids')[0].object.properties.get('Annots').should.have.length(2)
   })
 
   it('pdfFormField with text type', async () => {
@@ -1595,6 +1622,7 @@ describe('pdf utils', () => {
       }
     })
 
+    require('fs').writeFileSync('out.pdf', result.content)
     const doc = new pdfjs.ExternalDocument(result.content)
 
     const acroForm = doc.catalog.get('AcroForm').object

@@ -60,7 +60,7 @@
   },
   "dependencies": {
     "cheerio": "0.22.0",
-    "jsreport-pdfjs": "github:jsreport/pdfjs#341a8d70e9a8eb138013252f3722cff10432f558",
+    "jsreport-pdfjs": "github:jsreport/pdfjs#fd04c27bcfa9d37881f11b1c75982fbaee380176",
     "lodash.omit": "4.5.0",
     "nanoid": "3.1.12",
     "node-forge": "0.10.0",
