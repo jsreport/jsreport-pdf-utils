@@ -421,6 +421,39 @@ describe('pdf utils', () => {
     parsedPdf.pages[1].text.includes('anotherpage').should.be.ok()
   })
 
+  it('append and merge shouldnt remove the hidden marks from pdf', async () => {
+    await jsreport.documentStore.collection('templates').insert({
+      content: `{{{pdfAddPageItem 'one'}}} <a href='#{{id}}' data-pdf-outline>link to main</a>`,
+      shortid: 'one',
+      name: 'one',
+      engine: 'handlebars',
+      recipe: 'chrome-pdf'
+    })
+
+    await jsreport.documentStore.collection('templates').insert({
+      content: '{{$pdf.pages.[1].items.[0]}}',
+      shortid: 'two',
+      name: 'two',
+      engine: 'handlebars',
+      recipe: 'chrome-pdf'
+    })
+
+    const result = await jsreport.render({
+      template: {
+        content: `<h1 id='main'>main</h1>`,
+        engine: 'handlebars',
+        name: 'main',
+        recipe: 'chrome-pdf',
+        pdfOperations: [{ type: 'append', templateShortid: 'one' }, { type: 'append', templateShortid: 'two' }]
+      }
+    })
+
+    const parsedPdf = await parsePdf(result.content, {
+      includeText: true
+    })
+    parsedPdf.pages[2].text.includes('one').should.be.ok()
+  })
+
   it('append with inline template definition', async () => {
     const result = await jsreport.render({
       template: {
