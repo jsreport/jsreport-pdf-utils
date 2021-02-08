@@ -968,14 +968,37 @@ describe('pdf utils', () => {
   it('should be able to add outlines', async () => {
     const result = await jsreport.render({
       template: {
-        content: ` <a href='#foo' data-pdf-outline data-pdf-outline-text='foo'>foo</a><h1 id='foo'>hello</h1>`,
+        content: `
+          <a href='#parent' data-pdf-outline data-pdf-outline-text='parent'>
+            parent
+          </a><br>
+          <a href='#nested' data-pdf-outline data-pdf-outline-parent='parent' data-pdf-outline-text='nested'>
+            nested
+          </a>
+          <a href='#nested-nested' data-pdf-outline data-pdf-outline-parent='nested' data-pdf-outline-text='nested-nested'>
+            nested nested
+          </a>
+          <a href='#nested-nested2' data-pdf-outline data-pdf-outline-parent='nested' data-pdf-outline-text='nested-nested2'>
+          nested nested2
+        </a>
+          <h1 id='parent'>parent</h1>
+          <h1 id='nested'>nested</h1>
+          <h1 id='nested-nested'>nested-nested</h1>
+          <h1 id='nested-nested2'>nested-nested2</h1>
+        `,
         name: 'content',
         engine: 'none',
         recipe: 'chrome-pdf'
       }
     })
 
-    result.content.toString().should.containEql('/Outlines')
+    require('fs').writeFileSync('out.pdf', result.content)
+
+    const doc = new pdfjs.ExternalDocument(result.content)
+
+    const outlines = doc.catalog.get('Outlines').object
+    outlines.properties.get('Count').should.be.eql(-1)
+    doc.catalog.get('Outlines').object.properties.get('First').object.properties.get('First').object.properties.get('Count').should.be.eql(-2)
   })
 
   it('should be able to add outlines through child template', async () => {
@@ -1828,6 +1851,29 @@ describe('pdf utils', () => {
         {{{pdfFormField name='a' type='text' width='200px' height='20px'}}}
         <div style='page-break-before: always;'></div>
         {{{pdfFormField name='b' type='text' width='200px' height='20px'}}}`
+      }
+    })
+
+    const doc = new pdfjs.ExternalDocument(result.content)
+
+    const acroForm = doc.catalog.get('AcroForm').object
+    acroForm.properties.get('Fields').should.have.length(2)
+  })
+
+  it('pdfFormField with append operation', async () => {
+    const result = await jsreport.render({
+      template: {
+        recipe: 'chrome-pdf',
+        engine: 'handlebars',
+        content: `Page1 {{{pdfFormField name='a' type='text' width='200px' height='20px'}}}`,
+        pdfOperations: [{
+          type: 'append',
+          template: {
+            content: `Page2 {{{pdfFormField name='b' type='text' width='200px' height='20px'}}}`,
+            engine: 'handlebars',
+            recipe: 'chrome-pdf'
+          }
+        }]
       }
     })
 
