@@ -4,6 +4,7 @@ const fs = require('fs')
 const path = require('path')
 const pdfjs = require('jsreport-pdfjs')
 const { extractSignature } = require('node-signpdf/dist/helpers')
+const processText = require('../lib/utils/processText.js')
 const should = require('should')
 
 function initialize (strategy = 'in-process') {
@@ -1881,6 +1882,47 @@ describe('pdf utils', () => {
 
     const acroForm = doc.catalog.get('AcroForm').object
     acroForm.properties.get('Fields').should.have.length(2)
+  })
+})
+
+describe('processText with pdf from alpine', () => {
+  it('should deal with double f ligerature and remove hidden mark', async () => {
+    const content = fs.readFileSync(path.join(__dirname, 'alpine.pdf'))
+    const external = new pdfjs.ExternalDocument(content)
+    const document = new pdfjs.Document({
+      external
+    })
+    await processText(
+      document,
+      external,
+      {
+        removeHiddenMarks: true,
+        hiddenPageFields: {
+          ff2181tsdwkqil98bfi73sks: Buffer.from(JSON.stringify({
+            height: 20,
+            width: 100,
+            type: 'text',
+            name: 'test'
+          })).toString('base64')
+        }
+      }
+    )
+
+    document.addPagesOf(external)
+    const buffer = await document.asBuffer()
+
+    const newExt = new pdfjs.ExternalDocument(buffer)
+
+    const acroForm = newExt.catalog.get('AcroForm').object
+    should(acroForm).not.be.null()
+    const field = acroForm.properties.get('Fields')[0].object
+    field.properties.get('T').toString().should.be.eql('(test)')
+
+    const parsedPdf = await parsePdf(buffer, {
+      includeText: true
+    })
+    parsedPdf.pages[0].text.replace(/ /g, '').should.be.eql('čbeforeafterč')
+    fs.writeFileSync('out.pdf', buffer)
   })
 })
 

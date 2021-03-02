@@ -4,8 +4,8 @@
   "description": "jsreport extension providing pdf operations like merge or concatenation",
   "main": "index.js",
   "scripts": {
-    "test": "set DEBUG=jsreport&& mocha test --timeout=20000 && standard",
-    "test-full": "set DEBUG=jsreport&&set TEST_FULL=true&& mocha test --timeout=20000 && standard",
+    "test": "set DEBUG=jsreport&&mocha test --timeout=20000&&standard",
+    "test-full": "set DEBUG=jsreport&&set TEST_FULL=true&&mocha test --timeout=2000&&standard",
     "lint": "standard",
     "start": "jsreport-studio-start --httpPort 5488",
     "build": "jsreport-studio-build",
@@ -17,7 +17,7 @@
   ],
   "standard": {
     "ignore": [
-      "main.js"
+      "studio/main.js"
     ],
     "parser": "babel-eslint",
     "env": {
