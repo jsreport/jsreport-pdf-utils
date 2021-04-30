@@ -1497,6 +1497,22 @@ describe('pdf utils', () => {
     should(acroForm).not.be.null()
   })
 
+  it('pdfSign should throw nice error when cert too long for placeholder', async () => {
+    return jsreport.render({
+      template: {
+        content: 'Hello',
+        engine: 'none',
+        recipe: 'chrome-pdf',
+        pdfSign: {
+          certificateAsset: {
+            content: fs.readFileSync(path.join(__dirname, 'longcert.p12')),
+            password: 'password'
+          }
+        }
+      }
+    }).should.be.rejectedWith(/maxSignaturePlaceholderLength/)
+  })
+
   it('pdfSign should work together with pdf password', async () => {
     const result = await jsreport.render({
       template: {
@@ -1923,6 +1939,44 @@ describe('processText with pdf from alpine', () => {
     })
     parsedPdf.pages[0].text.replace(/ /g, '').should.be.eql('čbeforeafterč')
     fs.writeFileSync('out.pdf', buffer)
+  })
+})
+
+describe('pdf utils with maxSignaturePlaceholderLength', () => {
+  let jsreport
+  beforeEach(async () => {
+    jsreport = await JsReport()
+      .use(require('../')({
+        maxSignaturePlaceholderLength: 16384
+      }))
+      .use(require('jsreport-chrome-pdf')())
+      .init()
+  })
+  afterEach(() => jsreport && jsreport.close())
+
+  it('pdfSign should sign output pdf', async () => {
+    const result = await jsreport.render({
+      template: {
+        content: 'Hello',
+        engine: 'none',
+        recipe: 'chrome-pdf',
+        pdfSign: {
+          certificateAsset: {
+            content: fs.readFileSync(path.join(__dirname, 'longcert.p12')),
+            password: 'password'
+          }
+        }
+      }
+    })
+    require('fs').writeFileSync('out.pdf', result.content)
+    const { signature, signedData } = extractSignature(result.content)
+    signature.should.be.of.type('string')
+    signedData.should.be.instanceOf(Buffer)
+
+    const doc = new pdfjs.ExternalDocument(result.content)
+
+    const acroForm = doc.catalog.get('AcroForm').object
+    should(acroForm).not.be.null()
   })
 })
 
