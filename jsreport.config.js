@@ -7,7 +7,7 @@ module.exports = {
       'pdf-utils': {
         type: 'object',
         properties: {
-          maxSignaturePlaceholderLength: { type: 'number', default: 8192 }          
+          maxSignaturePlaceholderLength: { type: 'number', default: 8192 }
         }
       }
     }
