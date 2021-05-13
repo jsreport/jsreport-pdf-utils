@@ -711,6 +711,26 @@ describe('pdf utils', () => {
     parsedPdf.pages.should.have.length(2)
   })
 
+  it('should be able to add meta to pdf with empty font name', async () => {
+    jsreport.afterRenderListeners.insert(0, 'test', (req, res) => {
+      if (req.template.content === 'main') {
+        res.content = fs.readFileSync(path.join(__dirname, 'empty-name.pdf'))
+      }
+    })
+
+    const r = await jsreport.render({
+      template: {
+        content: 'main',
+        engine: 'none',
+        recipe: 'chrome-pdf',
+        pdfMeta: {
+          title: 'Hello'
+        }
+      }
+    })
+    fs.writeFileSync('out.pdf', r.content)
+  })
+
   it('should be able to merge none jsreport produced pdf', async () => {
     jsreport.afterRenderListeners.insert(0, 'test', (req, res) => {
       if (req.template.content === 'replace') {
