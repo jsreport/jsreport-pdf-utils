@@ -9,6 +9,7 @@ const should = require('should')
 
 function initialize (strategy = 'in-process') {
   const jsreport = JsReport({
+    allowLocalFilesAccess: true,
     encryption: {
       secretKey: '1111111811111118'
     },
@@ -1672,7 +1673,7 @@ describe('pdf utils', () => {
 
     should(doc.pages.get('Kids')[0].object.properties.get('Annots')[0].object).not.be.null()
     acroForm.properties.get('Fields').should.have.length(2)
-    const field = acroForm.properties.get('Fields')[1].object
+    const field = acroForm.properties.get('Fields')[0].object
     field.properties.get('T').toString().should.be.eql('(test)')
 
     const { signature, signedData } = extractSignature(result.content)
@@ -1902,11 +1903,11 @@ describe('pdf utils', () => {
       template: {
         recipe: 'chrome-pdf',
         engine: 'handlebars',
-        content: `Page1 {{{pdfFormField name='a' type='text' width='200px' height='20px'}}}`,
+        content: `Page1 {{{pdfFormField name='a' type='text' fontFamily='Times-Roman' width='200px' height='20px'}}}`,
         pdfOperations: [{
           type: 'append',
           template: {
-            content: `Page2 {{{pdfFormField name='b' type='text' width='200px' height='20px'}}}`,
+            content: `Page2 {{{pdfFormField name='b' fontFamily='Courier' type='text' width='200px' height='20px'}}}`,
             engine: 'handlebars',
             recipe: 'chrome-pdf'
           }
@@ -1914,10 +1915,46 @@ describe('pdf utils', () => {
       }
     })
 
+    require('fs').writeFileSync('result2.pdf', result.content)
     const doc = new pdfjs.ExternalDocument(result.content)
 
     const acroForm = doc.catalog.get('AcroForm').object
     acroForm.properties.get('Fields').should.have.length(2)
+    const fonts = acroForm.properties.get('DR').get('Font')
+    fonts.get('Times-Roman').should.be.ok()
+    fonts.get('Courier').should.be.ok()
+  })
+
+  it('pdfFormField with append operation called from a script', async () => {
+    const result = await jsreport.render({
+      template: {
+        recipe: 'chrome-pdf',
+        engine: 'handlebars',
+        content: `Page1 {{{pdfFormField name='a' type='text' width='200px' height='20px'}}}`,
+        scripts: [{
+          content: `
+          async function afterRender(req, res) {
+            const jsreport = require('jsreport-proxy')
+            const r = await jsreport.render({
+              template: {
+                content: "{{{pdfFormField name='b' type='text' width='200px' height='20px'}}}",
+                recipe: "chrome-pdf",
+                engine: "handlebars"
+              }             
+            })
+            res.content = await jsreport.pdfUtils.append(res.content, r.content)
+          }
+          ` }]
+      }
+    })
+
+    require('fs').writeFileSync('out.pdf', result.content)
+    const doc = new pdfjs.ExternalDocument(result.content)
+    const acroForm = doc.catalog.get('AcroForm').object
+    acroForm.properties.get('Fields').should.have.length(2)
+    acroForm.properties.get('NeedAppearances').toString().should.be.eql('true')
+    const fonts = acroForm.properties.get('DR').get('Font')
+    fonts.get('Helvetica').should.be.ok()
   })
 })
 
@@ -1925,9 +1962,7 @@ describe('processText with pdf from alpine', () => {
   it('should deal with double f ligerature and remove hidden mark', async () => {
     const content = fs.readFileSync(path.join(__dirname, 'alpine.pdf'))
     const external = new pdfjs.ExternalDocument(content)
-    const document = new pdfjs.Document({
-      external
-    })
+    const document = new pdfjs.Document()
     await processText(
       document,
       external,
