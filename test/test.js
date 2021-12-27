@@ -82,7 +82,7 @@ describe('pdf utils', () => {
 
     const result = await jsreport.render({
       template: {
-        content: `<h1 style='page-break-before: always'>Hello</h1><h1 style='page-break-before: always'>Hello</h1>`,
+        content: '<h1 style=\'page-break-before: always\'>Hello</h1><h1 style=\'page-break-before: always\'>Hello</h1>',
         engine: 'none',
         name: 'content',
         recipe: 'chrome-pdf',
@@ -109,7 +109,7 @@ describe('pdf utils', () => {
 
     const result = await jsreport.render({
       template: {
-        content: `{{{pdfCreatePagesGroup "SomeText"}}}`,
+        content: '{{{pdfCreatePagesGroup "SomeText"}}}',
         engine: 'handlebars',
         name: 'content',
         recipe: 'chrome-pdf',
@@ -135,7 +135,7 @@ describe('pdf utils', () => {
 
     const result = await jsreport.render({
       template: {
-        content: `{{{pdfCreatePagesGroup "SomeText"}}}{{{pdfCreatePagesGroup "Different"}}}`,
+        content: '{{{pdfCreatePagesGroup "SomeText"}}}{{{pdfCreatePagesGroup "Different"}}}',
         engine: 'handlebars',
         name: 'content',
         recipe: 'chrome-pdf',
@@ -161,7 +161,7 @@ describe('pdf utils', () => {
 
     const result = await jsreport.render({
       template: {
-        content: `a{{{pdfCreatePagesGroup "1"}}}<div style='page-break-before: always' />b`,
+        content: 'a{{{pdfCreatePagesGroup "1"}}}<div style=\'page-break-before: always\' />b',
         engine: 'handlebars',
         name: 'content',
         recipe: 'chrome-pdf',
@@ -188,7 +188,7 @@ describe('pdf utils', () => {
 
     const result = await jsreport.render({
       template: {
-        content: `{{{pdfCreatePagesGroup foo="1"}}}`,
+        content: '{{{pdfCreatePagesGroup foo="1"}}}',
         engine: 'handlebars',
         recipe: 'chrome-pdf',
         pdfOperations: [{ type: 'merge', renderForEveryPage: true, templateShortid: 'header' }]
@@ -213,7 +213,7 @@ describe('pdf utils', () => {
 
     const result = await jsreport.render({
       template: {
-        content: `{{{pdfCreatePagesGroup num}}}`,
+        content: '{{{pdfCreatePagesGroup num}}}',
         engine: 'handlebars',
         name: 'content',
         recipe: 'chrome-pdf',
@@ -244,7 +244,7 @@ describe('pdf utils', () => {
 
     const result = await jsreport.render({
       template: {
-        content: `{{{pdfCreatePagesGroup num}}}`,
+        content: '{{{pdfCreatePagesGroup num}}}',
         engine: 'handlebars',
         name: 'content',
         recipe: 'chrome-pdf',
@@ -272,7 +272,7 @@ describe('pdf utils', () => {
 
     const result = await jsreport.render({
       template: {
-        content: `{{pdfCreatePagesGroup foo="1"/}}`,
+        content: '{{pdfCreatePagesGroup foo="1"/}}',
         engine: 'jsrender',
         name: 'content',
         recipe: 'chrome-pdf',
@@ -297,7 +297,7 @@ describe('pdf utils', () => {
 
     const result = await jsreport.render({
       template: {
-        content: `{{{pdfAddPageItem "a"}}}{{{pdfAddPageItem "b"}}}`,
+        content: '{{{pdfAddPageItem "a"}}}{{{pdfAddPageItem "b"}}}',
         name: 'content',
         engine: 'handlebars',
         recipe: 'chrome-pdf',
@@ -331,7 +331,7 @@ describe('pdf utils', () => {
 
     const result = await jsreport.render({
       template: {
-        content: `Foo`,
+        content: 'Foo',
         name: 'content',
         engine: 'none',
         recipe: 'chrome-pdf',
@@ -357,7 +357,7 @@ describe('pdf utils', () => {
 
     const result = await jsreport.render({
       template: {
-        content: `Foo`,
+        content: 'Foo',
         name: 'content',
         engine: 'none',
         recipe: 'chrome-pdf',
@@ -379,7 +379,7 @@ describe('pdf utils', () => {
         name: 'content',
         engine: 'none',
         recipe: 'chrome-pdf',
-        pdfOperations: [{ type: 'merge', template: { content: 'header', engine: 'none', 'recipe': 'chrome-pdf' } }],
+        pdfOperations: [{ type: 'merge', template: { content: 'header', engine: 'none', recipe: 'chrome-pdf' } }],
         chrome: {
           marginTop: '3cm'
         }
@@ -408,7 +408,7 @@ describe('pdf utils', () => {
 
     const result = await jsreport.render({
       template: {
-        content: `foo`,
+        content: 'foo',
         engine: 'none',
         name: 'foo',
         recipe: 'chrome-pdf',
@@ -425,7 +425,7 @@ describe('pdf utils', () => {
 
   it('append and merge shouldnt remove the hidden marks from pdf', async () => {
     await jsreport.documentStore.collection('templates').insert({
-      content: `{{{pdfAddPageItem 'one'}}} <a href='#{{id}}' data-pdf-outline>link to main</a>`,
+      content: '{{{pdfAddPageItem \'one\'}}} <a href=\'#{{id}}\' data-pdf-outline>link to main</a>',
       shortid: 'one',
       name: 'one',
       engine: 'handlebars',
@@ -442,7 +442,7 @@ describe('pdf utils', () => {
 
     const result = await jsreport.render({
       template: {
-        content: `<h1 id='main'>main</h1>`,
+        content: '<h1 id=\'main\'>main</h1>',
         engine: 'handlebars',
         name: 'main',
         recipe: 'chrome-pdf',
@@ -459,7 +459,7 @@ describe('pdf utils', () => {
   it('append with inline template definition', async () => {
     const result = await jsreport.render({
       template: {
-        content: `foo`,
+        content: 'foo',
         engine: 'none',
         name: 'foo',
         recipe: 'chrome-pdf',
@@ -488,7 +488,7 @@ describe('pdf utils', () => {
 
     const result = await jsreport.render({
       template: {
-        content: `foo`,
+        content: 'foo',
         name: 'foo',
         engine: 'none',
         recipe: 'chrome-pdf',
@@ -506,7 +506,7 @@ describe('pdf utils', () => {
   it('prepend with inline template definition', async () => {
     const result = await jsreport.render({
       template: {
-        content: `foo`,
+        content: 'foo',
         name: 'foo',
         engine: 'none',
         recipe: 'chrome-pdf',
@@ -659,7 +659,7 @@ describe('pdf utils', () => {
     })
 
     await jsreport.documentStore.collection('templates').insert({
-      content: `{{{pdfCreatePagesGroup "Appended"}}}`,
+      content: '{{{pdfCreatePagesGroup "Appended"}}}',
       shortid: 'append',
       name: 'append',
       engine: 'handlebars',
@@ -668,10 +668,10 @@ describe('pdf utils', () => {
 
     const result = await jsreport.render({
       template: {
-        content: `{{{pdfCreatePagesGroup "Main"}}}`,
+        content: '{{{pdfCreatePagesGroup "Main"}}}',
         engine: 'handlebars',
         recipe: 'chrome-pdf',
-        pdfOperations: [ { type: 'append', templateShortid: 'append' },
+        pdfOperations: [{ type: 'append', templateShortid: 'append' },
           { type: 'merge', renderForEveryPage: true, templateShortid: 'header' }]
       }
     })
@@ -793,7 +793,7 @@ describe('pdf utils', () => {
   it('merge should merge whole documents when mergeWholeDocument', async () => {
     const result = await jsreport.render({
       template: {
-        content: `main1<div style='page-break-before: always;'></div>main2`,
+        content: 'main1<div style=\'page-break-before: always;\'></div>main2',
         name: 'content',
         engine: 'none',
         recipe: 'chrome-pdf',
@@ -823,7 +823,7 @@ describe('pdf utils', () => {
   it('should be able to merge watermark into pdf with native header produced by phantomjs', async () => {
     const result = await jsreport.render({
       template: {
-        content: `main`,
+        content: 'main',
         name: 'content',
         engine: 'none',
         recipe: 'phantom-pdf',
@@ -834,7 +834,7 @@ describe('pdf utils', () => {
           type: 'merge',
           mergeWholeDocument: true,
           template: {
-            content: `watermark`,
+            content: 'watermark',
             engine: 'handlebars',
             recipe: 'phantom-pdf'
           }
@@ -913,14 +913,14 @@ describe('pdf utils', () => {
 
     const result = await jsreport.render({
       template: {
-        content: `main`,
+        content: 'main',
         name: 'content',
         engine: 'none',
         recipe: 'chrome-pdf',
         pdfOperations: [{
           type: 'merge',
           template: {
-            content: `word`,
+            content: 'word',
             engine: 'none',
             recipe: 'html'
           }
@@ -938,14 +938,14 @@ describe('pdf utils', () => {
   it('should not break pdf href links when doing append', async () => {
     const result = await jsreport.render({
       template: {
-        content: `<a href='#foo'>foo</a><h1 id='foo'>hello</h1>`,
+        content: '<a href=\'#foo\'>foo</a><h1 id=\'foo\'>hello</h1>',
         name: 'content',
         engine: 'none',
         recipe: 'chrome-pdf',
         pdfOperations: [{
           type: 'append',
           template: {
-            content: `hello`,
+            content: 'hello',
             engine: 'none',
             recipe: 'chrome-pdf'
           }
@@ -972,7 +972,7 @@ describe('pdf utils', () => {
           type: 'merge',
           renderForEveryPage: true,
           template: {
-            content: `{{#with (lookup $pdf.pages $pdf.pageIndex)}}{{items.[0].text}}{{/with}}`,
+            content: '{{#with (lookup $pdf.pages $pdf.pageIndex)}}{{items.[0].text}}{{/with}}',
             engine: 'handlebars',
             recipe: 'chrome-pdf'
           }
@@ -1025,14 +1025,14 @@ describe('pdf utils', () => {
 
   it('should be able to add outlines through child template', async () => {
     await jsreport.documentStore.collection('templates').insert({
-      content: `<a href="#child" id="child" data-pdf-outline data-pdf-outline-parent="root">Child</a>`,
+      content: '<a href="#child" id="child" data-pdf-outline data-pdf-outline-parent="root">Child</a>',
       name: 'child',
       engine: 'none',
       recipe: 'html'
     })
     const result = await jsreport.render({
       template: {
-        content: `<a href="#root" id="root" data-pdf-outline>Root</a>{#child child}`,
+        content: '<a href="#root" id="root" data-pdf-outline>Root</a>{#child child}',
         name: 'content',
         engine: 'none',
         recipe: 'chrome-pdf'
@@ -1053,7 +1053,7 @@ describe('pdf utils', () => {
 
     const result = await jsreport.render({
       template: {
-        content: `{{{pdfCreatePagesGroup "SomeText"}}}{{{pdfAddPageItem "v"}}}`,
+        content: '{{{pdfCreatePagesGroup "SomeText"}}}{{{pdfAddPageItem "v"}}}',
         engine: 'handlebars',
         name: 'content',
         recipe: 'chrome-pdf',
@@ -1080,7 +1080,7 @@ describe('pdf utils', () => {
 
     const result = await jsreport.render({
       template: {
-        content: `{{{pdfCreatePagesGroup "SomeText"}}}{{{pdfAddPageItem "v"}}}`,
+        content: '{{{pdfCreatePagesGroup "SomeText"}}}{{{pdfAddPageItem "v"}}}',
         engine: 'handlebars',
         name: 'content',
         recipe: 'chrome-pdf',
@@ -1303,7 +1303,7 @@ describe('pdf utils', () => {
     const result = await jsreport.render({
       template: {
         content: `<h1>Hello from Page 1</h1>
-        <div style='page-break-before: always;'></div>        
+        <div style='page-break-before: always;'></div>
         <h1>Hello from Page 2</h1>`,
         engine: 'none',
         recipe: 'chrome-pdf',
@@ -1337,27 +1337,27 @@ describe('pdf utils', () => {
           content: `
             const jsreport = require('jsreport-proxy')
 
-            async function afterRender (req, res) {              
+            async function afterRender (req, res) {
               const appendRest = await jsreport.render({
                 template: {
-                  content: '{{{pdfAddPageItem "foo"}}}',          
+                  content: '{{{pdfAddPageItem "foo"}}}',
                   engine: 'handlebars',
                   recipe: 'chrome-pdf'
                 }
-              })               
-              
-              const $pdf = await jsreport.pdfUtils.parse(appendRest.content)              
-            
+              })
+
+              const $pdf = await jsreport.pdfUtils.parse(appendRest.content)
+
               const mergeRes = await jsreport.render({
                 template: {
-                  content: '{{{$pdf.pages.[0].items.[0]}}}',                
+                  content: '{{{$pdf.pages.[0].items.[0]}}}',
                   engine: 'handlebars',
                   recipe: 'chrome-pdf'
                 },
                 data: {
                   $pdf
                 }
-              })               
+              })
 
               res.content = await jsreport.pdfUtils.merge(appendRest.content, mergeRes.content)
             }
@@ -1378,7 +1378,7 @@ describe('pdf utils', () => {
     const result = await jsreport.render({
       template: {
         content: `<h1>Hello from Page 1</h1>
-        <div style='page-break-before: always;'></div>        
+        <div style='page-break-before: always;'></div>
         <h1>Hello from Page 2</h1>`,
         engine: 'none',
         recipe: 'chrome-pdf',
@@ -1450,7 +1450,7 @@ describe('pdf utils', () => {
   it('pdfPassword should encrypt outlines', async () => {
     const result = await jsreport.render({
       template: {
-        content: `<a href="#root" id="root" data-pdf-outline data-pdf-outline-title='MyTitlečřšš'>link</a><h1>root</h1>`,
+        content: '<a href="#root" id="root" data-pdf-outline data-pdf-outline-title=\'MyTitlečřšš\'>link</a><h1>root</h1>',
         name: 'content',
         engine: 'none',
         recipe: 'chrome-pdf',
@@ -1684,7 +1684,7 @@ describe('pdf utils', () => {
   it('pdfSign shouldnt break anchors', async () => {
     const result = await jsreport.render({
       template: {
-        content: `<a href='#1'>link</a><div style='page-break-before: always;'></div><h1 id='1'>navigate here</h1>`,
+        content: '<a href=\'#1\'>link</a><div style=\'page-break-before: always;\'></div><h1 id=\'1\'>navigate here</h1>',
         engine: 'none',
         recipe: 'chrome-pdf',
         pdfSign: {
@@ -1747,7 +1747,7 @@ describe('pdf utils', () => {
       template: {
         recipe: 'chrome-pdf',
         engine: 'handlebars',
-        content: `{{{pdfFormField formatType='number' formatFractionalDigits=2 formatSepComma=true formatNegStyle='ParensRed' formatCurrency='$' formatCurrencyPrepend=true name='test' type='text' width='300px' height='20px'}}}`
+        content: '{{{pdfFormField formatType=\'number\' formatFractionalDigits=2 formatSepComma=true formatNegStyle=\'ParensRed\' formatCurrency=\'$\' formatCurrencyPrepend=true name=\'test\' type=\'text\' width=\'300px\' height=\'20px\'}}}'
       }
     })
 
@@ -1768,7 +1768,7 @@ describe('pdf utils', () => {
       template: {
         recipe: 'chrome-pdf',
         engine: 'handlebars',
-        content: `{{{pdfFormField name='test' type='signature' width='100px' height='50px'}}}`
+        content: '{{{pdfFormField name=\'test\' type=\'signature\' width=\'100px\' height=\'50px\'}}}'
       }
     })
 
@@ -1785,7 +1785,7 @@ describe('pdf utils', () => {
       template: {
         recipe: 'chrome-pdf',
         engine: 'handlebars',
-        content: `{{{pdfFormField name='test' type='combo' value='b' items='a,b,c' width='100px' height='20px'}}}`
+        content: '{{{pdfFormField name=\'test\' type=\'combo\' value=\'b\' items=\'a,b,c\' width=\'100px\' height=\'20px\'}}}'
       }
     })
 
@@ -1870,7 +1870,7 @@ describe('pdf utils', () => {
       template: {
         recipe: 'chrome-pdf',
         engine: 'handlebars',
-        content: `<span>š{{{pdfFormField name='name' type='text' width='130px' height='40px'}}}</span>`
+        content: '<span>š{{{pdfFormField name=\'name\' type=\'text\' width=\'130px\' height=\'40px\'}}}</span>'
       }
     })
 
@@ -1903,11 +1903,11 @@ describe('pdf utils', () => {
       template: {
         recipe: 'chrome-pdf',
         engine: 'handlebars',
-        content: `Page1 {{{pdfFormField name='a' type='text' fontFamily='Times-Roman' width='200px' height='20px'}}}`,
+        content: 'Page1 {{{pdfFormField name=\'a\' type=\'text\' fontFamily=\'Times-Roman\' width=\'200px\' height=\'20px\'}}}',
         pdfOperations: [{
           type: 'append',
           template: {
-            content: `Page2 {{{pdfFormField name='b' fontFamily='Courier' type='text' width='200px' height='20px'}}}`,
+            content: 'Page2 {{{pdfFormField name=\'b\' fontFamily=\'Courier\' type=\'text\' width=\'200px\' height=\'20px\'}}}',
             engine: 'handlebars',
             recipe: 'chrome-pdf'
           }
@@ -1930,7 +1930,7 @@ describe('pdf utils', () => {
       template: {
         recipe: 'chrome-pdf',
         engine: 'handlebars',
-        content: `Page1 {{{pdfFormField name='a' type='text' width='200px' height='20px'}}}`,
+        content: 'Page1 {{{pdfFormField name=\'a\' type=\'text\' width=\'200px\' height=\'20px\'}}}',
         scripts: [{
           content: `
           async function afterRender(req, res) {
@@ -1940,11 +1940,45 @@ describe('pdf utils', () => {
                 content: "{{{pdfFormField name='b' type='text' width='200px' height='20px'}}}",
                 recipe: "chrome-pdf",
                 engine: "handlebars"
-              }             
+              }
             })
             res.content = await jsreport.pdfUtils.append(res.content, r.content)
           }
-          ` }]
+          `
+        }]
+      }
+    })
+
+    require('fs').writeFileSync('out.pdf', result.content)
+    const doc = new pdfjs.ExternalDocument(result.content)
+    const acroForm = doc.catalog.get('AcroForm').object
+    acroForm.properties.get('Fields').should.have.length(2)
+    acroForm.properties.get('NeedAppearances').toString().should.be.eql('true')
+    const fonts = acroForm.properties.get('DR').get('Font')
+    fonts.get('Helvetica').should.be.ok()
+  })
+
+  it('pdfFormField with merge operation called from a script', async () => {
+    const result = await jsreport.render({
+      template: {
+        recipe: 'chrome-pdf',
+        engine: 'handlebars',
+        content: 'Page1 {{{pdfFormField name=\'a\' type=\'text\' width=\'200px\' height=\'20px\'}}}',
+        scripts: [{
+          content: `
+          async function afterRender(req, res) {
+            const jsreport = require('jsreport-proxy')
+            const r = await jsreport.render({
+              template: {
+                content: "<div style='margin-top: 100px; background-color: red'>{{{pdfFormField name='myfield1' type='text' width='200px' height='20px'}}}</div>",
+                recipe: "chrome-pdf",
+                engine: "handlebars"
+              }
+            })
+            res.content = await jsreport.pdfUtils.merge(res.content, r.content)
+          }
+          `
+        }]
       }
     })
 
